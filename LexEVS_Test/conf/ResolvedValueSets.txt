@@ -901,3 +901,143 @@ SPL Risk Evaluation and Mitigation Strategies Ter
 SPL Shape Terminology
 SPL Type of Drug Interaction Terminology
 SPL Unit of Presentation Terminology
+CDISC Clinical Classification BUERS Test Code Ter
+CDISC Clinical Classification BUERS Test Name Ter
+CDISC Clinical Classification HAM-D6 Clinician Ve
+CDISC Clinical Classification HAM-D6 Clinician Ve
+CDISC Clinical Classification HAMD 24 Test Code T
+CDISC Clinical Classification HAMD 24 Test Name T
+CDISC Clinical Classification IDS-C Test Code Ter
+CDISC Clinical Classification IDS-C Test Name Ter
+CDISC Clinical Classification KDPI Test Code Term
+CDISC Clinical Classification KDPI Test Name Term
+CDISC Clinical Classification NSAA Test Code Term
+CDISC Clinical Classification NSAA Test Name Term
+CDISC Clinical Classification PASI Test Code Term
+CDISC Clinical Classification PASI Test Name Term
+CDISC Clinical Classification QIDS-C Test Code Te
+CDISC Clinical Classification QIDS-C Test Name Te
+CDISC Clinical Classification VLERS Test Code Ter
+CDISC Clinical Classification VLERS Test Name Ter
+CDISC Protocol Entities Physical Address Attribut
+CDISC Protocol Entities Study Protocol Attribute 
+CDISC Protocol Entities Terminology
+CDISC Protocol Terminology
+CDISC Questionnaire BEBQ Concurrent Version Test 
+CDISC Questionnaire BEBQ Concurrent Version Test 
+CDISC Questionnaire BEBQ Retrospective Version Te
+CDISC Questionnaire BEBQ Retrospective Version Te
+CDISC Questionnaire CES Test Code Terminology
+CDISC Questionnaire CES Test Name Terminology
+CDISC Questionnaire CGI Generic Modification Vers
+CDISC Questionnaire CGI Generic Modification Vers
+CDISC Questionnaire CGI Original Version Test Cod
+CDISC Questionnaire CGI Original Version Test Nam
+CDISC Questionnaire EPDS Test Code Terminology
+CDISC Questionnaire EPDS Test Name Terminology
+CDISC Questionnaire FACT-HEP Version 4 Test Code 
+CDISC Questionnaire FACT-HEP Version 4 Test Name 
+CDISC Questionnaire FACT-LEU Version 4 Test Code 
+CDISC Questionnaire FACT-LEU Version 4 Test Name 
+CDISC Questionnaire FACT-LYM Version 4 Test Code 
+CDISC Questionnaire FACT-LYM Version 4 Test Name 
+CDISC Questionnaire HAM-D6 Self-Report Version Te
+CDISC Questionnaire HAM-D6 Self-Report Version Te
+CDISC Questionnaire HAQ-DI With VAS Test Code Ter
+CDISC Questionnaire HAQ-DI With VAS Test Name Ter
+CDISC Questionnaire HAQ-DI Without VAS Test Code 
+CDISC Questionnaire HAQ-DI Without VAS Test Name 
+CDISC Questionnaire IDS-SR Test Code Terminology
+CDISC Questionnaire IDS-SR Test Name Terminology
+CDISC Questionnaire LEC-5 Standard Version Test C
+CDISC Questionnaire LEC-5 Standard Version Test N
+CDISC Questionnaire PCL-5 Test Code Terminology
+CDISC Questionnaire PCL-5 Test Name Terminology
+CDISC Questionnaire PGI Generic Modification Vers
+CDISC Questionnaire PGI Generic Modification Vers
+CDISC Questionnaire PODCI Adolescent Parent-Repor
+CDISC Questionnaire PODCI Adolescent Parent-Repor
+CDISC Questionnaire PODCI Adolescent Self-Reporte
+CDISC Questionnaire PODCI Adolescent Self-Reporte
+CDISC Questionnaire PODCI Pediatric Parent-Report
+CDISC Questionnaire PODCI Pediatric Parent-Report
+CDISC Questionnaire Q-LES-Q Test Code Terminology
+CDISC Questionnaire Q-LES-Q Test Name Terminology
+CDISC Questionnaire Q-LES-Q-SF Test Code Terminol
+CDISC Questionnaire Q-LES-Q-SF Test Name Terminol
+CDISC Questionnaire QIDS-SR Test Code Terminology
+CDISC Questionnaire QIDS-SR Test Name Terminology
+CDISC Questionnaire RAND Social Support Survey Te
+CDISC Questionnaire RAND Social Support Survey Te
+CDISC Questionnaire TSQM Version 1.4 Test Code Te
+CDISC Questionnaire TSQM Version 1.4 Test Name Te
+CDISC Questionnaire WHODAS 2.0 12+24-item Version
+CDISC Questionnaire WHODAS 2.0 12+24-item Version
+CDISC Questionnaire WHODAS 2.0 12-item Version In
+CDISC Questionnaire WHODAS 2.0 12-item Version In
+CDISC Questionnaire WHODAS 2.0 12-item Version Pr
+CDISC Questionnaire WHODAS 2.0 12-item Version Pr
+CDISC Questionnaire WHODAS 2.0 12-item Version Se
+CDISC Questionnaire WHODAS 2.0 12-item Version Se
+CDISC Questionnaire WHODAS 2.0 36-item Version In
+CDISC Questionnaire WHODAS 2.0 36-item Version In
+CDISC Questionnaire WHODAS 2.0 36-item Version Pr
+CDISC Questionnaire WHODAS 2.0 36-item Version Pr
+CDISC Questionnaire WHODAS 2.0 36-item Version Se
+CDISC Questionnaire WHODAS 2.0 36-item Version Se
+CDISC SDTM AJCC Tumor Grade Response Terminology
+CDISC SDTM Administration Technique Response Term
+CDISC SDTM Asthma Findings About Test Code Termin
+CDISC SDTM Asthma Findings About Test Name Termin
+CDISC SDTM Death Diagnosis Test Code Terminology
+CDISC SDTM Death Diagnosis Test Name Terminology
+CDISC SDTM Device-In-Use Response Terminology
+CDISC SDTM Diabetic Kidney Findings About Test Co
+CDISC SDTM Diabetic Kidney Findings About Test Na
+CDISC SDTM Ebola Virus Findings About Test Code T
+CDISC SDTM Ebola Virus Findings About Test Name T
+CDISC SDTM Genetic Region of Interest Type Termin
+CDISC SDTM Malaria Findings About Test Code Termi
+CDISC SDTM Malaria Findings About Test Name Termi
+CDISC SDTM Microscopic Findings Test Code Termino
+CDISC SDTM Microscopic Findings Test Name Termino
+CDISC SDTM Pharmacogenomics/Genetics Methods and 
+CDISC SDTM Pharmacogenomics/Genetics Methods and 
+CDISC SDTM Specimen Collection Method Terminology
+CDISC SDTM Urinary System Test Code Terminology
+CDISC SDTM Urinary System Test Name Terminology
+CDISC SEND Country Terminology
+CDISC SEND Within Normal Limits Results Terminolo
+Clinical Data Interchange Standards Consortium Te
+FDA Center For Devices and Radiological Health Te
+FDA Quality Metrics Terminology
+GAIA Dysfunctional Labor Level of Diagnostic Cert
+Location of Event Occurrence ICSR Terminology
+Medical Device Component Or Accessory Terminology
+Medical Device Evaluation Conclusions Terminology
+Medical Device Evaluation Methods Terminology FDA
+Medical Device Evaluation Results Terminology FDA
+Medical Device Problem Codes FDA CDRH
+NCPDP Terminology
+Patient Problem Codes FDA CDRH
+Pediatric Endocrinology Terminology
+Pediatric Hematology-Oncology Terminology
+Reason for Non-Evaluation ICSR Terminology
+SPL Blood Form Donor Type Terminology
+SPL Blood Form Establishment Functions Terminology
+SPL Blood Form Establishment Type Terminology
+SPL Blood Form Product Type Terminology
+SPL Blood Form Type of Ownership Terminology
+SPL Blood and Tissue Form Terminology
+SPL Tissue Form Donor Type Terminology
+SPL Tissue Form Establishment Functions Terminolo
+SPL Tissue Form Establishment Type Terminology
+SPL Tissue Form Product Group Terminology
+SPL Tissue Form Product Type Terminology
+SPL Type of Drug Interaction Consequence Terminol
+Type of Follow-Up ICSR Terminology
+Type of Manufacturer ICSR Terminology
+Type of Remedial Action ICSR Terminology
+Type of Report ICSR Terminology
+Type of Reporter ICSR Terminology
+UCUM Terminology
