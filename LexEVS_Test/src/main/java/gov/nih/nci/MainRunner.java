@@ -28,9 +28,11 @@ import java.net.URL;
 
 import org.apache.log4j.xml.DOMConfigurator;
 
+import gov.nih.nci.cadsr.testCoreTypeQueries;
 import gov.nih.nci.evs.testCTS2;
 import gov.nih.nci.evs.testDataIntegrity;
 //import gov.nih.nci.cadsr.testCoreTypeQueries;
+import gov.nih.nci.ncicb.cadsr.evs.testSIW;
 
 /**
  * @author safrant
@@ -70,11 +72,22 @@ public class MainRunner {
 		}
 
 		try {
+			
+//			if (address.length() > 0) {
+//				new testCoreTypeQueries(address);
+//			}
+			
+			if (address.length() >0) {
+				new testSIW(address);
+			}
+			
 			if (address.length() > 0) {
 				tdi = new testDataIntegrity(address, configFilesLocation);
 			} else {
 				tdi = new testDataIntegrity(configFilesLocation);
 			}
+			tdi.findConceptsByCode();
+			tdi.findByPreferredName();
 			tdi.testListCodingSchemes();
 			tdi.testVersion();
 //			tdi.testName_and_Syn.
@@ -99,9 +112,7 @@ public class MainRunner {
 			tdi.testSearchValueSetForTerm();
 			}
 			
-//			if (address.length() > 0) {
-//				new testCoreTypeQueries(address);
-//			}
+
 			
 			
 			testCTS2 cts2 = new testCTS2(cts2Address);

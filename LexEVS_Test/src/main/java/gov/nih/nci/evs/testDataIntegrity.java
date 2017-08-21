@@ -3,6 +3,8 @@ package gov.nih.nci.evs;
 import gov.nih.nci.camod.util.EvsTreeUtil;
 import gov.nih.nci.camod.util.RemoteServerUtil;
 import gov.nih.nci.evs.security.SecurityToken;
+import gov.nih.nci.ncicb.cadsr.evs.EVSConcept;
+import gov.nih.nci.ncicb.cadsr.evs.EVSException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -30,6 +32,7 @@ import org.LexGrid.LexBIG.DataModel.Collections.MetadataPropertyList;
 import org.LexGrid.LexBIG.DataModel.Collections.NCIChangeEventList;
 import org.LexGrid.LexBIG.DataModel.Collections.NameAndValueList;
 import org.LexGrid.LexBIG.DataModel.Collections.ResolvedConceptReferenceList;
+import org.LexGrid.LexBIG.DataModel.Collections.SortOptionList;
 import org.LexGrid.LexBIG.DataModel.Collections.SystemReleaseList;
 import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
 import org.LexGrid.LexBIG.DataModel.Core.CodingSchemeSummary;
@@ -56,6 +59,7 @@ import org.LexGrid.LexBIG.Utility.Constructors;
 import org.LexGrid.LexBIG.Utility.ConvenienceMethods;
 import org.LexGrid.LexBIG.Utility.LBConstants;
 import org.LexGrid.LexBIG.Utility.Iterators.ResolvedConceptReferencesIterator;
+import org.LexGrid.LexBIG.Utility.LBConstants.MatchAlgorithms;
 import org.LexGrid.LexBIG.caCore.interfaces.LexEVSApplicationService;
 import org.LexGrid.LexBIG.caCore.interfaces.LexEVSService;
 import org.LexGrid.codingSchemes.CodingScheme;
@@ -1997,4 +2001,123 @@ public class testDataIntegrity {
 			return false;
 		}
 	}
+	
+	public void findConceptsByCode()
+			throws EVSException {
+		String conceptCode = "C12434";  //Blood
+		boolean includeRetiredConcepts = false;
+		String vocabName = "NCI Thesaurus";
+		try {
+			CodedNodeSet cns = lbSvc.getNodeSet(vocabName, null, null);
+			cns = cns.restrictToCodes(Constructors.createConceptReferenceList(conceptCode));
+		
+			/*cns = cns.restrictToMatchingDesignations(
+					conceptCode, 
+					SearchDesignationOption.ALL, 
+					MatchAlgorithms.exactMatch.name(),
+					null
+				);*/
+			//cns=cns.restrictToMatchingDesignations(searchTerm, SearchDesignationOption.PREFERRED_ONLY, "LuceneQuery",  null);
+			cns = restrictToSource(cns, "NCI");			
+			
+			ResolvedConceptReferencesIterator results = resolveNodeSet(cns, includeRetiredConcepts);
+			if(results != null){
+				while (results.hasNext()){
+					ResolvedConceptReference rcr = results.next();
+					rcr.getCode();
+				}
+			}
+			
+		} catch (Exception e) {
+			
+			throw new EVSException("Error finding concept for code ["+conceptCode+"]", e);
+		}
+		
+	}
+	
+	  public void findByPreferredName() 
+	  {
+			String searchItem = "Blood";  
+			boolean includeRetiredConcepts = false;
+			String vocabName = "NCI Thesaurus";
+
+	    try {
+	    	System.out.println("Test findByPreferredName");
+	    	CodingSchemeVersionOrTag cvt = new CodingSchemeVersionOrTag();
+			cvt.setVersion("17.06d");
+
+			CodedNodeSet cns = lbSvc.getNodeSet(vocabName, cvt, null);
+			cns = cns.restrictToMatchingDesignations(
+					searchItem, 
+					CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, 
+					MatchAlgorithms.exactMatch.name(), 
+					null);
+			
+			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[2];
+			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
+			propTypes[1] = CodedNodeSet.PropertyType.DEFINITION;
+			
+			SortOptionList sortCriteria = Constructors.createSortOptionList(new String[]{"matchToQuery"});
+			ResolvedConceptReferenceList rcrl = cns.resolveToList(sortCriteria, null,new LocalNameList(), propTypes, true, 10);
+			for (int i = 0; i < rcrl.getResolvedConceptReferenceCount(); i++) {
+				ResolvedConceptReference rcr = rcrl.getResolvedConceptReference(i);
+				rcr.getCode();
+			}
+			
+			
+			ResolvedConceptReferencesIterator rcri = cns.resolve(sortCriteria, null,new LocalNameList(), propTypes, true);
+			if(rcri != null){
+				while (rcri.hasNext()){
+					ResolvedConceptReference rcr = rcri.next();
+					rcr.getCode();
+				}
+			}
+
+	    } catch (Exception e){
+	      e.printStackTrace();
+	    } // end of try-catch
+
+	
+	  }
+	
+	
+	public static CodedNodeSet restrictToSource(CodedNodeSet cns, String source) {
+		if (cns == null) return cns;
+		if (source == null || source.compareTo("*") == 0 || source.compareTo("") == 0 || source.compareTo("ALL") == 0) return cns;
+
+		LocalNameList contextList = null;
+		LocalNameList sourceLnL = new LocalNameList();
+		sourceLnL.addEntry(source);
+		NameAndValueList qualifierList = null;
+
+//		Vector<String> w2 = new Vector<String>();
+//		w2.add(source);
+//		sourceLnL = vector2LocalNameList(w2);
+		
+		LocalNameList propertyLnL = null;
+		CodedNodeSet.PropertyType[] types = new CodedNodeSet.PropertyType[] {CodedNodeSet.PropertyType.PRESENTATION};
+		try {
+			cns = cns.restrictToProperties(propertyLnL, types, sourceLnL, contextList, qualifierList);
+		} catch (Exception ex) {
+			System.out.println("restrictToSource throws exceptions.");
+			return null;
+		}
+		return cns;
+	}
+	
+	 public ResolvedConceptReferencesIterator resolveNodeSet(CodedNodeSet cns, boolean includeRetiredConcepts) throws Exception {
+			
+			if (!includeRetiredConcepts) {
+				cns.restrictToStatus(CodedNodeSet.ActiveOption.ACTIVE_ONLY, null);
+			}
+			CodedNodeSet.PropertyType propTypes[] = new CodedNodeSet.PropertyType[2];
+			propTypes[0] = CodedNodeSet.PropertyType.PRESENTATION;
+			propTypes[1] = CodedNodeSet.PropertyType.DEFINITION;
+			
+			SortOptionList sortCriteria = Constructors.createSortOptionList(new String[]{"matchToQuery"});
+			
+			ResolvedConceptReferencesIterator results = cns.resolve(sortCriteria, null,new LocalNameList(), propTypes, true);
+			
+			return results;
+		}
 }

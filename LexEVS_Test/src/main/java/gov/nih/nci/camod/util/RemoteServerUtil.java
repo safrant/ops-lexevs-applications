@@ -79,8 +79,8 @@ public class RemoteServerUtil {
 			// "http://ncias-q532-v.nci.nih.gov:29080/lexevsapi60";
 
 			// DataQA
-			// String serviceUrl =
-			// "http://ncias-q599-v.nci.nih.gov:29080/lexevsapi60";
+//			 String serviceURL = "http://ncias-q1319.nci.nih.gov:8580/lexevsapi64";
+//			serviceURL = "http://lexevsapi6-data-qa.nci.nih.gov/lexevsapi64";
 
 			// ********************Stage Servers **************************
 //			 String serviceUrl =
@@ -92,7 +92,7 @@ public class RemoteServerUtil {
 			// "http://ncias-s692.nci.nih.gov:29080/lexevsapi60";
 
 			// **************Prod Servers**********************
-			 serviceURL = "http://lexevsapi60.nci.nih.gov/lexevsapi60";
+			 serviceURL = "https://lexevsapi6.nci.nih.gov/lexevsapi64";
 
 			// String serviceUrl =
 			// "http://ncias-p673.nci.nih.gov:29080/lexevsapi60";
