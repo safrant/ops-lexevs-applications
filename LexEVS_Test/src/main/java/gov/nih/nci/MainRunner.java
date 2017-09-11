@@ -1,6 +1,6 @@
 /**
  * National Cancer Institute Center for Bioinformatics
- * 
+ *
  * LexEVS_Test_42
  * gov.nih.nci
  * MainRunner.java
@@ -23,11 +23,6 @@
  */
 package gov.nih.nci;
 
-
-import java.net.URL;
-
-import org.apache.log4j.xml.DOMConfigurator;
-
 import gov.nih.nci.cadsr.testCoreTypeQueries;
 import gov.nih.nci.evs.testCTS2;
 import gov.nih.nci.evs.testDataIntegrity;
@@ -36,7 +31,7 @@ import gov.nih.nci.ncicb.cadsr.evs.testSIW;
 
 /**
  * @author safrant
- * 
+ *
  */
 public class MainRunner {
 
@@ -48,7 +43,7 @@ public class MainRunner {
 		String cts2Address = "";
 		String configFilesLocation = "";
 		testDataIntegrity tdi;
-		boolean doCache = false;
+		boolean doAdvanced = false;
 
 		if (args.length > 0) {
 			for (int i = 0; i < args.length; i++) {
@@ -59,28 +54,30 @@ public class MainRunner {
 				if (option.equalsIgnoreCase("-I")) {
 					address = args[++i];
 				}
-				if (option.equalsIgnoreCase("-C")){
-				    cts2Address = args[++i];
+				if (option.equalsIgnoreCase("-C")) {
+					cts2Address = args[++i];
 				}
 				if (option.equalsIgnoreCase("-L")) {
 					configFilesLocation = args[++i];
-				} 
-				if (option.equalsIgnoreCase("-V")){
-					doCache = true;
+				}
+				if (option.equalsIgnoreCase("-V")) {
+					doAdvanced = true;
 				}
 			}
 		}
 
 		try {
-			
-//			if (address.length() > 0) {
-//				new testCoreTypeQueries(address);
-//			}
-			
-			if (address.length() >0) {
-				new testSIW(address);
+			if (doAdvanced) {
+
+				if (address.length() > 0) {
+					new testCoreTypeQueries(address);
+				}
+
+				if (address.length() > 0) {
+					new testSIW(address);
+				}
 			}
-			
+
 			if (address.length() > 0) {
 				tdi = new testDataIntegrity(address, configFilesLocation);
 			} else {
@@ -90,34 +87,30 @@ public class MainRunner {
 			tdi.findByPreferredName();
 			tdi.testListCodingSchemes();
 			tdi.testVersion();
-//			tdi.testName_and_Syn.
 			tdi.testCodingSchemeSearchability();
 			tdi.testName_and_Synonym();
-		    tdi.testSupportedProperties();
+			tdi.testSupportedProperties();
 			tdi.testHistory();
 			tdi.testCodingSchemeMetadata();
 			tdi.getBySource();
 			tdi.testQuickSearch();
 			if (configFilesLocation.length() > 1) {
-				tdi.testLocalNames(configFilesLocation+"LocalNames.txt");
+				tdi.testLocalNames(configFilesLocation + "LocalNames.txt");
 			}
 			tdi.testHierarchy();
 			tdi.testSearchDoubleMetaphone();
-			
-			//Value sets
-			tdi.testListValueSets();
-			if(doCache){
-			tdi.CacheValueSetDefinition_NCIt();
-			tdi.cacheValeSetDefinition_NDFRT();
-			tdi.testSearchValueSetForTerm();
-			}
-			
 
-			
-			
+			// Value sets
+			tdi.testListValueSets();
+			if (doAdvanced) {
+				tdi.CacheValueSetDefinition_NCIt();
+				tdi.cacheValeSetDefinition_NDFRT();
+				tdi.testSearchValueSetForTerm();
+			}
+
 			testCTS2 cts2 = new testCTS2(cts2Address);
 			cts2.doTests();
-			
+
 		}
 		// logger.debug("Testing log4j");}
 		catch (Exception e) {
@@ -131,6 +124,7 @@ public class MainRunner {
 		System.out.println(" ");
 		System.out.println("  -I, \t\tPath to the lexbig tier to be tested)");
 		System.out.println("  -L, \tPath to the config directory");
+		System.out.println("  -V, \t\tInclude if doing local advanced testing. Exclude if doing data release testing");
 		System.exit(1);
 	}
 

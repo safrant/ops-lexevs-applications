@@ -15,12 +15,7 @@
   	<dependency>
   		<groupId>lexevs</groupId>
   		<artifactId>lexevs-remote-client</artifactId>
-  		<version>6.4.0.FINAL</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>lexevs</groupId>
-  		<artifactId>lexgrid-model</artifactId>
-  		<version>6.4.0.FINAL</version>
+  		<version>6.4.1</version>
   	</dependency>
   	<dependency>
   		<groupId>lexevs</groupId>
@@ -94,5 +89,40 @@
   		<artifactId>LexEVSSecurity</artifactId>
   		<version>6.4.1</version>
   	</dependency>
+  	<dependency>
+  		<groupId>lexevs</groupId>
+  		<artifactId>lexgrid-model</artifactId>
+  		<version>6.4.1.4.FINAL</version>
+  		<type>pom</type>
+  	</dependency>
+  	<dependency>
+  		<groupId>lexevs</groupId>
+  		<artifactId>meta-loader</artifactId>
+  		<version>6.5.0.2.FINAL</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.servlet</groupId>
+  		<artifactId>javax.servlet-api</artifactId>
+  		<version>3.1.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+  		<artifactId>html-types</artifactId>
+  		<version>20170515.1</version>
+  	</dependency>
+  	<dependency>
+    <groupId>gov.nih.nci.evs</groupId>
+    <artifactId>browser-util</artifactId>
+    <version>1.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/src/main/resources/browser-util.jar</systemPath>
+</dependency>
+  	<dependency>
+    <groupId>org.LexGrid.lexevs</groupId>
+    <artifactId>metabrowser</artifactId>
+    <version>1.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/src/main/resources/metabrowser-extension-distributed-client-2.0.5.jar</systemPath>
+</dependency>
   </dependencies>
 </project>

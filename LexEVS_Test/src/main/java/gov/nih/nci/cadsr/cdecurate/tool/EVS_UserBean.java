@@ -851,208 +851,208 @@ public final class EVS_UserBean implements Serializable
    * @param res rsponse object
    * @param servlet servlet object
    */
-  public void getEVSInfoFromDSR(HttpServletRequest req, HttpServletResponse res, CurationServlet servlet)
-  {
-    try
-    {
-      //HttpSession session = req.getSession();
-      Vector vList = new Vector();
-      String eURL = "";
-      //right now use the hard coded vector. later query the database
-      GetACService getAC = new GetACService(req, res, servlet);
-      /*//get the curation specific url to test
-      vList = getAC.getToolOptionData("EVSAPI", "URL", "");
-      if (vList != null && vList.size()>0)
-      {
-        TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
-        if (tob != null) eURL = tob.getVALUE();
-        //System.out.println(tob.getVALUE() + " evs link cadsr for curation " + eURL);
-        if (eURL == null || eURL.equals("")) vList = new Vector();  //check it again
-      }*/
-      //get it again for all tools property
-      if (vList == null || vList.size()<1)
-      {
-        vList = getAC.getToolOptionData("EVSAPI", "URL", "");
-        if (vList != null && vList.size()>0)
-        {
-          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
-          if (tob != null) eURL = tob.getVALUE();
-        }
-      }
-   //   if (eURL != null) System.out.println(" evs url " + eURL);
-      this.setEVSConURL(eURL);
-     // if (arrVocab == null) arrVocab = new java.util.List();
-      //make sure of the matching before store it in he bean
-      this.setDSRDispName("caDSR");
-      vList = getAC.getToolOptionData("CURATION", "EVS.DSRDISPLAY", "");
-      if (vList != null && vList.size()>0)
-      {
-        TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
-        if (tob != null) this.setDSRDispName(tob.getVALUE());
-      }
-      //get the source type for the preferred vocabulary
-      this.setPrefVocab("");
-      vList = getAC.getToolOptionData("CURATION", "EVS.PREFERREDVOCAB", "");
-      if (vList != null && vList.size()>0)
-      {
-        TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
-        if (tob != null)
-          this.setPrefVocab(tob.getVALUE());
-      }
-      //get the source type for the preferred vocabulary
-      this.setPrefVocabSrc("");
-      vList = getAC.getToolOptionData("CURATION", "EVS.PREFERREDVOCAB.SOURCE", "");
-      if (vList != null && vList.size()>0)
-      {
-        TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
-        if (tob != null)
-          this.setPrefVocabSrc(tob.getVALUE());
-      }
-
-      //get vocab names
-      Vector<String> vocabname = new Vector<String>();
-      vList = getAC.getToolOptionData("CURATION", "EVS.VOCAB.%.EVSNAME", "");  //
-      if (vList != null && vList.size() > 0)
-      {
-        for (int i=0; i<vList.size(); i++)
-        {
-          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
-          if (tob != null) vocabname.addElement(tob.getVALUE());
-        }
-      }
-
-      //get vocab display
-      Vector<String> vocabdisp = new Vector<String>();
-      vList = getAC.getToolOptionData("CURATION", "EVS.VOCAB.%.DISPLAY", "");  //
-      if (vList != null && vList.size() > 0)
-      {
-        for (int i=0; i<vList.size(); i++)
-        {
-          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
-          if (tob != null) vocabdisp.addElement(tob.getVALUE());
-        }
-      }
-      //get include meta vocabs
-      Vector<String> metavocab = new Vector<String>();
-      vList = getAC.getToolOptionData("CURATION", "%.INCLUDEMETA", "");  //
-      if (vList != null && vList.size() > 0)
-      {
-        for (int i=0; i<vList.size(); i++)
-        {
-          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
-          if (tob != null) metavocab.addElement(tob.getVALUE());
-        }
-      }
-
-      //get vocab names from the evs and make sure they match with the cadsr.
-      java.util.List arrEVSVocab = this.getEVSVocabs(eURL);
-      if (vocabname != null && arrEVSVocab != null)
-      {
-        for (int i = 0; i<vocabname.size(); i++)
-        {
-          String sVocab = (String)vocabname.elementAt(i);
-          //compare with evs vocab names  and also the vocab name that only does meta search
-          if (!arrEVSVocab.contains(sVocab) && !metavocab.contains(sVocab))
-          {
-            logger.error(sVocab + " from caDSR does not contain in EVS Vocab list.");
-            vocabname.removeElement(sVocab);  //put this back later
-            vocabdisp.removeElementAt(i);
-          }
-        }
-      }
-      //store the vocab evs name and vocab display name in the bean
-      if (vocabname != null && vocabname.size()>0)
-        this.setVocabNameList(vocabname);
-      if (vocabdisp != null && vocabdisp.size()>0)
-        this.setVocabDisplayList(vocabdisp);
-      //store meta code separately
-      vList = getAC.getToolOptionData("CURATION", "EVS.METACODETYPE.%", "");
-      if (vList != null && vList.size()>0)
-      {
-        Hashtable<String, EVS_METACODE_Bean> hMeta = new Hashtable<String, EVS_METACODE_Bean>();
-        for (int i=0; i<vList.size(); i++)
-        {
-          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
-          if (tob != null)
-          {
-            EVS_METACODE_Bean metaBean = new EVS_METACODE_Bean();
-            String sProp = tob.getPROPERTY().replace("EVS.METACODETYPE.", "");
-            if (sProp != null && !sProp.equals(""))
-            {
-              int iPos = sProp.indexOf('.');
-              String sKey = sProp.substring(0, iPos);
-              metaBean.setMETACODE_KEY(sKey);
-              String sType = sProp.substring(iPos + 1);
-              metaBean.setMETACODE_TYPE(sType);
-              String sValue = tob.getVALUE();
-              metaBean.setMETACODE_FILTER(sValue);
-              hMeta.put(sKey, metaBean);
-            }
-          }
-        }
-        this.setMetaCodeType(hMeta);
-      }
-
-      // this.setDefDefaultValue("No Value Exists.");  //default value for the definition for all vocabs
-
-      //store teh list of definition sources to filter out for duplicates store them in this order
-      vList = getAC.getToolOptionData("CURATION", "EVS.DEFSOURCE.%", "");  //
-      if (vList != null && vList.size() > 0)
-      {
-        Vector<String> vDefSrc = new Vector<String>();
-        for (int i=0; i<vList.size(); i++)
-        {
-          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
-          if (tob != null) vDefSrc.addElement(tob.getVALUE());
-        }
-        if (vDefSrc != null && vDefSrc.size()>0)
-          this.setNCIDefSrcList(vDefSrc);
-      }
-
-      //get vocab attributes
-      Hashtable<String, EVS_UserBean> hvoc = new Hashtable<String, EVS_UserBean>();
-      vList = getAC.getToolOptionData("CURATION", "EVS.VOCAB.ALL.%", "");  //
-      //do the looping way right now
-      if (vocabname != null)
-      {
-        for (int i = 0; i<vocabname.size(); i++)
-        {
-          String sVocab = (String)vocabname.elementAt(i);
-          EVS_UserBean vBean = new EVS_UserBean();
-          String sDisp = sVocab;
-          if (vocabdisp != null && vocabdisp.size()> i)
-            sDisp = (String)vocabdisp.elementAt(i);
-          // vBean.setEVSConURL(eURL);
-          vBean.setVocabName(sVocab);
-          vBean.setVocabDisplay(sDisp);
-          vBean.setVocabDBOrigin(sDisp);
-          // vBean.setVocabUseParent(false);
-          vBean = this.storeVocabAttr(vBean, vList);  //call method to store all attributes
-          /*
-
-
-          int vocabInd=0;
-          if(sVocab.equals("Zebrafish"))
-        	 vocabInd = 9;
-          else
-        	  vocabInd=i+1;*/
-        String toolprop = getAC.getVocabInd(sVocab)+"%"; //"EVS.VOCAB." + vocabInd + "%";
-      //System.out.println(sVocab + toolprop);
-          Vector vocabList = getAC.getToolOptionData("CURATION", toolprop,"");
-          vBean = this.storeVocabAttr(vBean, vocabList);  //call method to add vocab specific attributges
-          //put this bean in the hash table
-          hvoc.put(sVocab, vBean);
-        }
-      }
-      this.setVocab_Attr(hvoc);
-      servlet.sessionData.EvsUsrBean = this;    //session.setAttribute("EvsUserBean", this);
-
-    }
-    catch(Exception e)
-    {
-      logger.error("Error: getEVSInfoFromDSR " + e.toString(), e);
-    }
-  }
+//  public void getEVSInfoFromDSR(HttpServletRequest req, HttpServletResponse res, CurationServlet servlet)
+//  {
+//    try
+//    {
+//      //HttpSession session = req.getSession();
+//      Vector vList = new Vector();
+//      String eURL = "";
+//      //right now use the hard coded vector. later query the database
+//      GetACService getAC = new GetACService(req, res, servlet);
+//      /*//get the curation specific url to test
+//      vList = getAC.getToolOptionData("EVSAPI", "URL", "");
+//      if (vList != null && vList.size()>0)
+//      {
+//        TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
+//        if (tob != null) eURL = tob.getVALUE();
+//        //System.out.println(tob.getVALUE() + " evs link cadsr for curation " + eURL);
+//        if (eURL == null || eURL.equals("")) vList = new Vector();  //check it again
+//      }*/
+//      //get it again for all tools property
+//      if (vList == null || vList.size()<1)
+//      {
+//        vList = getAC.getToolOptionData("EVSAPI", "URL", "");
+//        if (vList != null && vList.size()>0)
+//        {
+//          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
+//          if (tob != null) eURL = tob.getVALUE();
+//        }
+//      }
+//   //   if (eURL != null) System.out.println(" evs url " + eURL);
+//      this.setEVSConURL(eURL);
+//     // if (arrVocab == null) arrVocab = new java.util.List();
+//      //make sure of the matching before store it in he bean
+//      this.setDSRDispName("caDSR");
+//      vList = getAC.getToolOptionData("CURATION", "EVS.DSRDISPLAY", "");
+//      if (vList != null && vList.size()>0)
+//      {
+//        TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
+//        if (tob != null) this.setDSRDispName(tob.getVALUE());
+//      }
+//      //get the source type for the preferred vocabulary
+//      this.setPrefVocab("");
+//      vList = getAC.getToolOptionData("CURATION", "EVS.PREFERREDVOCAB", "");
+//      if (vList != null && vList.size()>0)
+//      {
+//        TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
+//        if (tob != null)
+//          this.setPrefVocab(tob.getVALUE());
+//      }
+//      //get the source type for the preferred vocabulary
+//      this.setPrefVocabSrc("");
+//      vList = getAC.getToolOptionData("CURATION", "EVS.PREFERREDVOCAB.SOURCE", "");
+//      if (vList != null && vList.size()>0)
+//      {
+//        TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(0);
+//        if (tob != null)
+//          this.setPrefVocabSrc(tob.getVALUE());
+//      }
+//
+//      //get vocab names
+//      Vector<String> vocabname = new Vector<String>();
+//      vList = getAC.getToolOptionData("CURATION", "EVS.VOCAB.%.EVSNAME", "");  //
+//      if (vList != null && vList.size() > 0)
+//      {
+//        for (int i=0; i<vList.size(); i++)
+//        {
+//          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
+//          if (tob != null) vocabname.addElement(tob.getVALUE());
+//        }
+//      }
+//
+//      //get vocab display
+//      Vector<String> vocabdisp = new Vector<String>();
+//      vList = getAC.getToolOptionData("CURATION", "EVS.VOCAB.%.DISPLAY", "");  //
+//      if (vList != null && vList.size() > 0)
+//      {
+//        for (int i=0; i<vList.size(); i++)
+//        {
+//          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
+//          if (tob != null) vocabdisp.addElement(tob.getVALUE());
+//        }
+//      }
+//      //get include meta vocabs
+//      Vector<String> metavocab = new Vector<String>();
+//      vList = getAC.getToolOptionData("CURATION", "%.INCLUDEMETA", "");  //
+//      if (vList != null && vList.size() > 0)
+//      {
+//        for (int i=0; i<vList.size(); i++)
+//        {
+//          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
+//          if (tob != null) metavocab.addElement(tob.getVALUE());
+//        }
+//      }
+//
+//      //get vocab names from the evs and make sure they match with the cadsr.
+//      java.util.List arrEVSVocab = this.getEVSVocabs(eURL);
+//      if (vocabname != null && arrEVSVocab != null)
+//      {
+//        for (int i = 0; i<vocabname.size(); i++)
+//        {
+//          String sVocab = (String)vocabname.elementAt(i);
+//          //compare with evs vocab names  and also the vocab name that only does meta search
+//          if (!arrEVSVocab.contains(sVocab) && !metavocab.contains(sVocab))
+//          {
+//            logger.error(sVocab + " from caDSR does not contain in EVS Vocab list.");
+//            vocabname.removeElement(sVocab);  //put this back later
+//            vocabdisp.removeElementAt(i);
+//          }
+//        }
+//      }
+//      //store the vocab evs name and vocab display name in the bean
+//      if (vocabname != null && vocabname.size()>0)
+//        this.setVocabNameList(vocabname);
+//      if (vocabdisp != null && vocabdisp.size()>0)
+//        this.setVocabDisplayList(vocabdisp);
+//      //store meta code separately
+//      vList = getAC.getToolOptionData("CURATION", "EVS.METACODETYPE.%", "");
+//      if (vList != null && vList.size()>0)
+//      {
+//        Hashtable<String, EVS_METACODE_Bean> hMeta = new Hashtable<String, EVS_METACODE_Bean>();
+//        for (int i=0; i<vList.size(); i++)
+//        {
+//          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
+//          if (tob != null)
+//          {
+//            EVS_METACODE_Bean metaBean = new EVS_METACODE_Bean();
+//            String sProp = tob.getPROPERTY().replace("EVS.METACODETYPE.", "");
+//            if (sProp != null && !sProp.equals(""))
+//            {
+//              int iPos = sProp.indexOf('.');
+//              String sKey = sProp.substring(0, iPos);
+//              metaBean.setMETACODE_KEY(sKey);
+//              String sType = sProp.substring(iPos + 1);
+//              metaBean.setMETACODE_TYPE(sType);
+//              String sValue = tob.getVALUE();
+//              metaBean.setMETACODE_FILTER(sValue);
+//              hMeta.put(sKey, metaBean);
+//            }
+//          }
+//        }
+//        this.setMetaCodeType(hMeta);
+//      }
+//
+//      // this.setDefDefaultValue("No Value Exists.");  //default value for the definition for all vocabs
+//
+//      //store teh list of definition sources to filter out for duplicates store them in this order
+//      vList = getAC.getToolOptionData("CURATION", "EVS.DEFSOURCE.%", "");  //
+//      if (vList != null && vList.size() > 0)
+//      {
+//        Vector<String> vDefSrc = new Vector<String>();
+//        for (int i=0; i<vList.size(); i++)
+//        {
+//          TOOL_OPTION_Bean tob = (TOOL_OPTION_Bean)vList.elementAt(i);
+//          if (tob != null) vDefSrc.addElement(tob.getVALUE());
+//        }
+//        if (vDefSrc != null && vDefSrc.size()>0)
+//          this.setNCIDefSrcList(vDefSrc);
+//      }
+//
+//      //get vocab attributes
+//      Hashtable<String, EVS_UserBean> hvoc = new Hashtable<String, EVS_UserBean>();
+//      vList = getAC.getToolOptionData("CURATION", "EVS.VOCAB.ALL.%", "");  //
+//      //do the looping way right now
+//      if (vocabname != null)
+//      {
+//        for (int i = 0; i<vocabname.size(); i++)
+//        {
+//          String sVocab = (String)vocabname.elementAt(i);
+//          EVS_UserBean vBean = new EVS_UserBean();
+//          String sDisp = sVocab;
+//          if (vocabdisp != null && vocabdisp.size()> i)
+//            sDisp = (String)vocabdisp.elementAt(i);
+//          // vBean.setEVSConURL(eURL);
+//          vBean.setVocabName(sVocab);
+//          vBean.setVocabDisplay(sDisp);
+//          vBean.setVocabDBOrigin(sDisp);
+//          // vBean.setVocabUseParent(false);
+//          vBean = this.storeVocabAttr(vBean, vList);  //call method to store all attributes
+//          /*
+//
+//
+//          int vocabInd=0;
+//          if(sVocab.equals("Zebrafish"))
+//        	 vocabInd = 9;
+//          else
+//        	  vocabInd=i+1;*/
+//        String toolprop = getAC.getVocabInd(sVocab)+"%"; //"EVS.VOCAB." + vocabInd + "%";
+//      //System.out.println(sVocab + toolprop);
+//          Vector vocabList = getAC.getToolOptionData("CURATION", toolprop,"");
+//          vBean = this.storeVocabAttr(vBean, vocabList);  //call method to add vocab specific attributges
+//          //put this bean in the hash table
+//          hvoc.put(sVocab, vBean);
+//        }
+//      }
+//      this.setVocab_Attr(hvoc);
+//      servlet.sessionData.EvsUsrBean = this;    //session.setAttribute("EvsUserBean", this);
+//
+//    }
+//    catch(Exception e)
+//    {
+//      logger.error("Error: getEVSInfoFromDSR " + e.toString(), e);
+//    }
+//  }
 
 
   public EVS_UserBean storeVocabAttr(EVS_UserBean vuBean, Vector vAttr)

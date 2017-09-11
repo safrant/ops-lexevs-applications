@@ -31,17 +31,19 @@ import org.LexGrid.versions.SystemRelease;
 
 
 
-public class CaDSRHistory {
+public class CaDSRHistory{
     String evsURL = "http://lexevsapi60.nci.nih.gov/lexevsapi60";
     LexBIGService lbSvc;
     String vocabName = "NCI Thesaurus";
-    public CaDSRHistory(){
+    
+    
+    public CaDSRHistory(String address){
     
     try
     {
 //    	service = (LexBIGService)ApplicationServiceProvider.getApplicationService("EvsServiceInfo");
     	lbSvc = (LexEVSService) ApplicationServiceProvider
-		        .getApplicationServiceFromUrl(evsURL, "EvsServiceInfo");
+		        .getApplicationServiceFromUrl(address, "EvsServiceInfo");
     	
     	//example of active concept with no splits
     	getConceptStatus("C3114");

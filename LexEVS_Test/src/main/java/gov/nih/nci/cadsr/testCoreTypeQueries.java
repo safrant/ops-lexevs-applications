@@ -1,6 +1,6 @@
 /**
  * National Cancer Institute Center for Bioinformatics
- * 
+ *
  * LexEVS_Test_42
  * gov.nih.nci.cadsr
  * testCoreTypeQueries.java
@@ -22,13 +22,6 @@
  * <!-- LICENSE_TEXT_END -->
  */
 package gov.nih.nci.cadsr;
-
-import gov.nih.nci.cadsr.cdecurate.tool.EVS_Bean;
-import gov.nih.nci.cadsr.cdecurate.tool.EVS_METACODE_Bean;
-import gov.nih.nci.cadsr.cdecurate.tool.EVS_UserBean;
-import gov.nih.nci.cadsr.sentinel.audits.AuditConceptToEVS;
-import gov.nih.nci.camod.util.RemoteServerUtil;
-import gov.nih.nci.evs.security.SecurityToken;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -69,14 +62,20 @@ import org.LexGrid.naming.Mappings;
 import org.LexGrid.naming.SupportedHierarchy;
 import org.apache.log4j.Logger;
 
+import gov.nih.nci.cadsr.cdecurate.tool.EVS_Bean;
+import gov.nih.nci.cadsr.cdecurate.tool.EVS_METACODE_Bean;
+import gov.nih.nci.cadsr.cdecurate.tool.EVS_UserBean;
+import gov.nih.nci.cadsr.sentinel.audits.AuditConceptToEVS;
+import gov.nih.nci.camod.util.RemoteServerUtil;
+import gov.nih.nci.evs.security.SecurityToken;
+
 /**
  * @author safrant
- * 
+ *
  */
 public class testCoreTypeQueries {
 
-	private org.apache.log4j.Logger logger = Logger
-	        .getLogger(gov.nih.nci.cadsr.testCoreTypeQueries.class);
+	private org.apache.log4j.Logger logger = Logger.getLogger(gov.nih.nci.cadsr.testCoreTypeQueries.class);
 
 	LexEVSService evsService = null;
 	// constant variables
@@ -102,6 +101,7 @@ public class testCoreTypeQueries {
 
 	public testCoreTypeQueries(LexEVSService lbSvc) {
 		this.evsService = lbSvc;
+		this.testReturnSuperConcepts();
 		this.getMetathesaurusMapping();
 		this.doConceptQuery();
 		this.test64Transition();
@@ -110,14 +110,14 @@ public class testCoreTypeQueries {
 		this.testMetaSearch();
 		this.testSentinelTool();
 	}
-	
-	public testCoreTypeQueries(String serviceURL){
+
+	public testCoreTypeQueries(String serviceURL) {
 		this(RemoteServerUtil.createLexEVSService(serviceURL));
 	}
 
 	/**
 	 * This method will test searchDescLogicConcepts
-	 * 
+	 *
 	 */
 	public static void searchDescLogicConcepts_NCI(LexEVSService appService) {
 		System.out.println("***********************");
@@ -138,13 +138,10 @@ public class testCoreTypeQueries {
 				System.out.println("appService is null");
 				return;
 			}
-			CodedNodeSet nodes = appService.getNodeSet(vocabName,
-			        ConvenienceMethods.createProductionTag(), null);
-			nodes = nodes.restrictToMatchingDesignations(searchTerm,
-			        SearchDesignationOption.ALL,
-			        LBConstants.MatchAlgorithms.startsWith.name(), null);
-			ResolvedConceptReferenceList crl = nodes.resolveToList(null, null,
-			        null, 20);
+			CodedNodeSet nodes = appService.getNodeSet(vocabName, ConvenienceMethods.createProductionTag(), null);
+			nodes = nodes.restrictToMatchingDesignations(searchTerm, SearchDesignationOption.ALL,
+					LBConstants.MatchAlgorithms.startsWith.name(), null);
+			ResolvedConceptReferenceList crl = nodes.resolveToList(null, null, null, 20);
 
 			// for (int i = 0; i < crl.getResolvedConceptReferenceCount(); i++)
 			// {
@@ -154,14 +151,11 @@ public class testCoreTypeQueries {
 			// + concept.getEntityDescription().getContent());
 			// }
 			if (crl.getResolvedConceptReferenceCount() > 5) {
-				System.out.println("Success for caCORE type search on "
-				        + vocabName + " " + searchTerm);
+				System.out.println("Success for caCORE type search on " + vocabName + " " + searchTerm);
 			}
 
 		} catch (Exception ex) {
-			System.out
-			        .println("FAILURE: testsearchDescLogicConcepts_NCI throws Exception = "
-			                + ex);
+			System.out.println("FAILURE: testsearchDescLogicConcepts_NCI throws Exception = " + ex);
 		}
 	}
 
@@ -186,69 +180,67 @@ public class testCoreTypeQueries {
 
 		try {
 			// check if valid dts vocab
-			dtsVocab = getVocabAttr(dtsVocab, testCoreTypeQueries.VOCAB_NULL,
-			        testCoreTypeQueries.VOCAB_NAME); // "",
+			dtsVocab = getVocabAttr(dtsVocab, testCoreTypeQueries.VOCAB_NULL, testCoreTypeQueries.VOCAB_NAME); // "",
 			// "vocabName");
-			if (dtsVocab.equals(testCoreTypeQueries.META_VALUE)) // "MetaValue"))
-			System.out.println("Metathesaurus");
+			if (dtsVocab.equals(testCoreTypeQueries.META_VALUE)) {
+				System.out.println("Metathesaurus");
+			}
 
-			this.registerSecurityToken((LexEVSApplicationService) evsService);
+			testCoreTypeQueries.registerSecurityToken((LexEVSApplicationService) evsService);
 
 			CodedNodeSet nodeSet = evsService.getNodeSet(dtsVocab, null, null);
 
 			if (sSearchIn.equals("ConCode")) {
 
-				ConceptReferenceList crefs = ConvenienceMethods
-				        .createConceptReferenceList(new String[] { termStr },
-				                "NCI Thesaurus");
+				ConceptReferenceList crefs = ConvenienceMethods.createConceptReferenceList(new String[] { termStr },
+						"NCI Thesaurus");
 				nodeSet = nodeSet.restrictToCodes(crefs);
 
-			} else if (sSearchIn.equals("subConcept"))
-			// query.getChildConcepts(dtsVocab, termStr);
-			try {
+			} else if (sSearchIn.equals("subConcept")) {
+				// query.getChildConcepts(dtsVocab, termStr);
+				try {
 
-				HashMap<String, ResolvedConceptReference> hSubs = returnSubConcepts(
-				        termStr, dtsVocab);
+					HashMap<String, ResolvedConceptReference> hSubs = returnSubConcepts(termStr, dtsVocab);
 
-				lstResult = new ResolvedConceptReferenceList();
-				Iterator<String> iter = hSubs.keySet().iterator();
-				while (iter.hasNext()) {
-					String code = iter.next();
-					ResolvedConceptReference ac = hSubs.get(code);
-					if (code != null && !code.equals(termStr)) {
-						lstResult.addResolvedConceptReference(ac);
+					lstResult = new ResolvedConceptReferenceList();
+					Iterator<String> iter = hSubs.keySet().iterator();
+					while (iter.hasNext()) {
+						String code = iter.next();
+						ResolvedConceptReference ac = hSubs.get(code);
+						if (code != null && !code.equals(termStr)) {
+							lstResult.addResolvedConceptReference(ac);
+						}
 					}
+				} catch (IndexOutOfBoundsException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (LBException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (IndexOutOfBoundsException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (LBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			else {
-				if (vocabType.equals("") || vocabType.equals("NameType")) // do
-																		  // concept
-																		  // name
-																		  // search
-				nodeSet = nodeSet.restrictToMatchingDesignations(termStr, // the
-																		  // text
-																		  // to
-																		  // match
-				        CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, // whether
-																			 // to
-																			 // search
-																			 // all
-																			 // designation,
-																			 // only
-																			 // Preferred
-																			 // or
-																			 // only
-																			 // Non-Preferred
-				        algorithm, // the match algorithm to use
-				        null); // the language to match (null matches all)
-				else if (vocabType.equals("PropType")) { // do concept prop
-														 // search
+			} else {
+				if (vocabType.equals("") || vocabType.equals("NameType")) {
+					// concept
+					// name
+					// search
+					nodeSet = nodeSet.restrictToMatchingDesignations(termStr, // the
+																				// text
+																				// to
+																				// match
+							CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, // whether
+																					// to
+																					// search
+																					// all
+																					// designation,
+																					// only
+																					// Preferred
+																					// or
+																					// only
+																					// Non-Preferred
+							algorithm, // the match algorithm to use
+							null); // the language to match (null matches all)
+				} else if (vocabType.equals("PropType")) { // do concept prop
+															// search
 					// GF32446 this cause Semantic_Type to not to be included
 					LocalNameList lnl = new LocalNameList();
 					lnl.addEntry(sPropIn);
@@ -257,13 +249,14 @@ public class testCoreTypeQueries {
 																		// Name
 																		// to
 																		// match
-					        null, // the Property Type to match (null matches
-								  // all)
-					        termStr, // the text to match
-					        algorithm, // the match algorithm to use
-					        null);// the language to match (null matches all)
+							null, // the Property Type to match (null matches
+									// all)
+							termStr, // the text to match
+							algorithm, // the match algorithm to use
+							null);// the language to match (null matches all)
 					System.out.println("doConceptQuery nodeSet retrieved");
-					// logger.debug("EVSSearch:doConceptQuery() nodeSet retrieved from lexEVS.");
+					// logger.debug("EVSSearch:doConceptQuery() nodeSet
+					// retrieved from lexEVS.");
 					// //GF29786 - geting the concept list from lexevs based on
 					// synonyms done (old way???)
 				}
@@ -275,50 +268,50 @@ public class testCoreTypeQueries {
 				Iterator iter = hType.keySet().iterator();
 				while (iter.hasNext()) {
 					String propName = (String) iter.next();
-					System.out.println("EVSSearch:doConceptQuery() propName ["
-					        + propName + "]");
+					System.out.println("EVSSearch:doConceptQuery() propName [" + propName + "]");
 					lnl.addEntry(propName);
 				}
 
-				if (sSearchAC.equals("ParentConceptVM")) lstResult = nodeSet
-				        .resolveToList(null, // Sorts used to sort results (null
-											 // means sort by match score)
-				                lnl, // PropertyNames to resolve (null resolves
-									 // all)
-				                new CodedNodeSet.PropertyType[] {
-				                        PropertyType.DEFINITION,
-				                        PropertyType.PRESENTATION }, // PropertyTypess
-																	 // to
-																	 // resolve
-																	 // (null
-																	 // resolves
-																	 // all)
-																	 // //PropertyTypess
-																	 // to
-																	 // resolve
-																	 // (null
-																	 // resolves
-																	 // all)
-				                100 // cap the number of results returned (-1
-									// resolves all)
-				        );
-				else
+				if (sSearchAC.equals("ParentConceptVM")) {
+					lstResult = nodeSet.resolveToList(null, // Sorts used to
+															// sort results
+															// (null
+															// means sort by
+															// match score)
+							lnl, // PropertyNames to resolve (null resolves
+									// all)
+							new CodedNodeSet.PropertyType[] { PropertyType.DEFINITION, PropertyType.PRESENTATION }, // PropertyTypess
+																													// to
+																													// resolve
+																													// (null
+																													// resolves
+																													// all)
+																													// //PropertyTypess
+																													// to
+																													// resolve
+																													// (null
+																													// resolves
+																													// all)
+							100 // cap the number of results returned (-1
+								// resolves all)
+					);
+				} else {
 					lstResult = nodeSet.resolveToList(null, // Sorts used to
 															// sort results
 															// (null means sort
 															// by match score)
-					        null, // PropertyNames to resolve (null resolves
-								  // all)
-					        new CodedNodeSet.PropertyType[] {
-					                PropertyType.DEFINITION,
-					                PropertyType.PRESENTATION }, // PropertyTypess
-																 // to resolve
-																 // (null
-																 // resolves
-																 // all)
-					        100 // cap the number of results returned (-1
+							null, // PropertyNames to resolve (null resolves
+									// all)
+							new CodedNodeSet.PropertyType[] { PropertyType.DEFINITION, PropertyType.PRESENTATION }, // PropertyTypess
+																													// to
+																													// resolve
+																													// (null
+																													// resolves
+																													// all)
+							100 // cap the number of results returned (-1
 								// resolves all)
-					        );
+					);
+				}
 
 			}
 		} catch (Exception ex) {
@@ -327,6 +320,36 @@ public class testCoreTypeQueries {
 			ex.printStackTrace();
 		}
 		System.out.println(lstResult.getResolvedConceptReferenceCount());
+	}
+
+	private void testReturnSuperConcepts() {
+		String code = "C12434";
+		String scheme = "NCI_Thesaurus";
+		HashMap<String, ResolvedConceptReference> ret = new HashMap<String, ResolvedConceptReference>();
+		try {
+
+			CodingScheme cs = evsService.resolveCodingScheme(scheme, null);
+			boolean forwardNavigable = cs.getMappings().getSupportedHierarchy()[0].isIsForwardNavigable();
+			String relation = returnAssociations(cs);
+
+			// Perform the query ...
+			NameAndValue nv = new NameAndValue();
+			NameAndValueList nvList = new NameAndValueList();
+			nv.setName(relation);
+			nvList.addNameAndValue(nv);
+
+			ResolvedConceptReferenceList matches = evsService.getNodeGraph(scheme, null, null)
+					.restrictToAssociations(nvList, null)
+					.resolveAsList(ConvenienceMethods.createConceptReference(code, scheme), !forwardNavigable,
+							forwardNavigable, 1, 1, new LocalNameList(), null, null, 1024);
+
+			// Analyze the result ...
+			ret = getAssociatedConcepts(matches, true);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		System.out.println(ret.size());
+
 	}
 
 	private String getAlgorithm(String termStr) {
@@ -344,9 +367,10 @@ public class testCoreTypeQueries {
 		starts = termStr.endsWith("*"); // Term starts with rest of the string
 
 		contains = termStr.substring(1, termStr.length() - 1).indexOf(" *") >= 0
-		        || termStr.substring(1, termStr.length() - 1).indexOf("* ") >= 0;
-		if (!contains) embed = termStr.substring(1, termStr.length() - 1)
-		        .indexOf("*") >= 0;
+				|| termStr.substring(1, termStr.length() - 1).indexOf("* ") >= 0;
+		if (!contains) {
+			embed = termStr.substring(1, termStr.length() - 1).indexOf("*") >= 0;
+		}
 
 		multiple = termStr.indexOf(' ') > 0;
 
@@ -372,13 +396,11 @@ public class testCoreTypeQueries {
 		return termStr;
 	}
 
-	private HashMap<String, ResolvedConceptReference> returnSubConcepts(
-	        String code, String scheme) throws LBException {
+	private HashMap<String, ResolvedConceptReference> returnSubConcepts(String code, String scheme) throws LBException {
 		HashMap<String, ResolvedConceptReference> ret = new HashMap<String, ResolvedConceptReference>();
 
 		CodingScheme cs = evsService.resolveCodingScheme(scheme, null);
-		boolean forwardNavigable = cs.getMappings().getSupportedHierarchy()[0]
-		        .isIsForwardNavigable();
+		boolean forwardNavigable = cs.getMappings().getSupportedHierarchy()[0].isIsForwardNavigable();
 		String relation = returnAssociations(cs);
 
 		// Perform the query ...
@@ -387,13 +409,10 @@ public class testCoreTypeQueries {
 		nv.setName(relation);
 		nvList.addNameAndValue(nv);
 
-		ResolvedConceptReferenceList matches = evsService
-		        .getNodeGraph(scheme, null, null)
-		        .restrictToAssociations(nvList, null)
-		        .resolveAsList(
-		                ConvenienceMethods.createConceptReference(code, scheme),
-		                forwardNavigable, !forwardNavigable, 1, 1,
-		                new LocalNameList(), null, null, 1024);
+		ResolvedConceptReferenceList matches = evsService.getNodeGraph(scheme, null, null)
+				.restrictToAssociations(nvList, null)
+				.resolveAsList(ConvenienceMethods.createConceptReference(code, scheme), forwardNavigable,
+						!forwardNavigable, 1, 1, new LocalNameList(), null, null, 1024);
 
 		// Analyze the result ...
 		ret = getAssociatedConcepts(matches, true);
@@ -406,57 +425,56 @@ public class testCoreTypeQueries {
 
 		Mappings mappings = cs.getMappings();
 		SupportedHierarchy[] hierarchies = mappings.getSupportedHierarchy();
-		SupportedHierarchy hierarchyDefn = hierarchies[0];
-		String[] associationsToNavigate = hierarchyDefn.getAssociationNames();// associations
+		// SupportedHierarchy hierarchyDefn = hierarchies[0];
+		for (SupportedHierarchy hierarchyDefn : hierarchies) {
+			String[] associationsToNavigate = hierarchyDefn.getAssociationNames();// associations
 
-		for (String assn : associationsToNavigate) {
-			if (assn.equals("subClassOf")) {
-				ret = assn;
-				// we prefer this association
-				break;
+			for (String assn : associationsToNavigate) {
+				if (assn.equals("subClassOf")) {
+					ret = assn;
+					// we prefer this association
+					break;
+				}
+				if (assn.equals("is_a")) {
+					ret = assn;
+					break;
+				}
+				if (ret.length() == 0 && hierarchyDefn.getLocalId().equals("is_a")) {
+					ret = assn;
+				}
 			}
-			if (assn.equals("is_a")) {
-				ret = assn;
-				break;
-			}
-			if (ret.length() == 0 && hierarchyDefn.getLocalId().equals("is_a")) ret = assn;
-
 		}
 
 		return ret;
 
 	}
 
-	private HashMap getAssociatedConcepts(ResolvedConceptReferenceList matches,
-	        boolean resolveConcepts) {
+	private HashMap getAssociatedConcepts(ResolvedConceptReferenceList matches, boolean resolveConcepts) {
 		HashMap ret = new HashMap();
 
 		if (matches.getResolvedConceptReferenceCount() > 0) {
-			ResolvedConceptReference ref = (ResolvedConceptReference) matches
-			        .enumerateResolvedConceptReference().nextElement();
+			ResolvedConceptReference ref = matches.enumerateResolvedConceptReference().nextElement();
 
 			// Print the associations
 			AssociationList targetof = ref.getTargetOf();
 			if (targetof != null) {
 				Association[] associations = targetof.getAssociation();
-				for (int i = 0; i < associations.length; i++) {
-					Association assoc = associations[i];
-					if (assoc != null
-					        && assoc.getAssociatedConcepts() != null
-					        && assoc.getAssociatedConcepts()
-					                .getAssociatedConcept() != null) { // blank
-																	   // screen
-																	   // due to
-																	   // NPE on
-																	   // superconcept
-						AssociatedConcept[] acl = assoc.getAssociatedConcepts()
-						        .getAssociatedConcept();
-						for (int j = 0; j < acl.length; j++) {
-							AssociatedConcept ac = acl[j];
-							if (resolveConcepts) ret.put(ac.getCode(), ac);
-							else
-								ret.put(ac.getCode(), ac.getEntityDescription()
-								        .getContent());
+				for (Association assoc : associations) {
+					if (assoc != null && assoc.getAssociatedConcepts() != null
+							&& assoc.getAssociatedConcepts().getAssociatedConcept() != null) { // blank
+																								// screen
+																								// due
+																								// to
+																								// NPE
+																								// on
+																								// superconcept
+						AssociatedConcept[] acl = assoc.getAssociatedConcepts().getAssociatedConcept();
+						for (AssociatedConcept ac : acl) {
+							if (resolveConcepts) {
+								ret.put(ac.getCode(), ac);
+							} else {
+								ret.put(ac.getCode(), ac.getEntityDescription().getContent());
+							}
 						}
 					}
 				}
@@ -466,28 +484,22 @@ public class testCoreTypeQueries {
 
 				if (sourceOf != null) {
 					Association[] associations = sourceOf.getAssociation();
-					for (int i = 0; i < associations.length; i++) {
-						Association assoc = associations[i];
-						if (assoc != null
-						        && assoc.getAssociatedConcepts() != null
-						        && assoc.getAssociatedConcepts()
-						                .getAssociatedConcept() != null) { // blank
-																		   // screen
-																		   // due
-																		   // to
-																		   // NPE
-																		   // on
-																		   // superconcept
-							AssociatedConcept[] acl = assoc
-							        .getAssociatedConcepts()
-							        .getAssociatedConcept();
-							for (int j = 0; j < acl.length; j++) {
-								AssociatedConcept ac = acl[j];
-								if (resolveConcepts) ret.put(ac.getCode(), ac);
-								else
-									ret.put(ac.getCode(), ac
-									        .getEntityDescription()
-									        .getContent());
+					for (Association assoc : associations) {
+						if (assoc != null && assoc.getAssociatedConcepts() != null
+								&& assoc.getAssociatedConcepts().getAssociatedConcept() != null) { // blank
+																									// screen
+																									// due
+																									// to
+																									// NPE
+																									// on
+																									// superconcept
+							AssociatedConcept[] acl = assoc.getAssociatedConcepts().getAssociatedConcept();
+							for (AssociatedConcept ac : acl) {
+								if (resolveConcepts) {
+									ret.put(ac.getCode(), ac);
+								} else {
+									ret.put(ac.getCode(), ac.getEntityDescription().getContent());
+								}
 							}
 						}
 					}
@@ -497,15 +509,15 @@ public class testCoreTypeQueries {
 
 		return ret;
 	}
-	
-	public static LexEVSService registerSecurityToken(
-	        LexEVSService lexevsService) throws Exception {
+
+	public static LexEVSService registerSecurityToken(LexEVSService lexevsService) throws Exception {
 
 		// String token = "";
 		// Hashtable ht = userBean.getVocab_Attr();
 		// if(ht == null) {
 		// throw new
-		// Exception("Not able to register security token (The vocabulary returns NULL for the coding schema ["
+		// Exception("Not able to register security token (The vocabulary
+		// returns NULL for the coding schema ["
 		// + codingScheme + "]).");
 		// }
 		// EVS_UserBean eu = (EVS_UserBean) ht.get(codingScheme);
@@ -516,32 +528,27 @@ public class testCoreTypeQueries {
 		securityToken.setAccessToken(token);
 		Boolean retval = null;
 		try {
-			retval = lexevsService.registerSecurityToken(codingScheme,
-			        securityToken);
+			retval = lexevsService.registerSecurityToken(codingScheme, securityToken);
 			if (retval != null && retval.equals(Boolean.TRUE)) {
-				System.out
-				        .println("Registration of SecurityToken was successful.");
+				System.out.println("Registration of SecurityToken was successful.");
 			} else {
-				System.out
-				        .println("WARNING: Registration of SecurityToken failed.");
+				System.out.println("WARNING: Registration of SecurityToken failed.");
 			}
 		} catch (Exception e) {
-			System.out
-			        .println("WARNING: Registration of SecurityToken failed.");
+			System.out.println("WARNING: Registration of SecurityToken failed.");
 		}
 		return lexevsService;
 	}
-	
-	
 
-	public static LexEVSApplicationService registerSecurityToken(
-	        LexEVSApplicationService lexevsService) throws Exception {
+	public static LexEVSApplicationService registerSecurityToken(LexEVSApplicationService lexevsService)
+			throws Exception {
 
 		// String token = "";
 		// Hashtable ht = userBean.getVocab_Attr();
 		// if(ht == null) {
 		// throw new
-		// Exception("Not able to register security token (The vocabulary returns NULL for the coding schema ["
+		// Exception("Not able to register security token (The vocabulary
+		// returns NULL for the coding schema ["
 		// + codingScheme + "]).");
 		// }
 		// EVS_UserBean eu = (EVS_UserBean) ht.get(codingScheme);
@@ -552,18 +559,14 @@ public class testCoreTypeQueries {
 		securityToken.setAccessToken(token);
 		Boolean retval = null;
 		try {
-			retval = lexevsService.registerSecurityToken(codingScheme,
-			        securityToken);
+			retval = lexevsService.registerSecurityToken(codingScheme, securityToken);
 			if (retval != null && retval.equals(Boolean.TRUE)) {
-				System.out
-				        .println("Registration of SecurityToken was successful.");
+				System.out.println("Registration of SecurityToken was successful.");
 			} else {
-				System.out
-				        .println("WARNING: Registration of SecurityToken failed.");
+				System.out.println("WARNING: Registration of SecurityToken failed.");
 			}
 		} catch (Exception e) {
-			System.out
-			        .println("WARNING: Registration of SecurityToken failed.");
+			System.out.println("WARNING: Registration of SecurityToken failed.");
 		}
 		return lexevsService;
 	}
@@ -571,7 +574,7 @@ public class testCoreTypeQueries {
 	/**
 	 * get the vocab attributes from teh user bean using filter attr and filter
 	 * value to check and return its equivaltnt attrs
-	 * 
+	 *
 	 * @param eUser
 	 *            EVS_userbean obtained from the database at login
 	 * @param sFilterValue
@@ -583,25 +586,29 @@ public class testCoreTypeQueries {
 	 * @return value from returning vocab
 	 */
 	public String getVocabAttr(String sFilterValue, int filterAttr, int retAttr) // String
-																				 // sFilterAttr,
-																				 // String
-																				 // sRetAttr)
+																					// sFilterAttr,
+																					// String
+																					// sRetAttr)
 	{
 		// "NCI Thesaurus",0,3
 		// go back if origin is emtpy
-		if (sFilterValue == null || sFilterValue.equals("")) return "";
+		if (sFilterValue == null || sFilterValue.equals(""))
+			return "";
 
 		String sRetValue = sFilterValue;
 		// Hashtable eHash = eUser.getVocab_Attr();
 		Vector vVocabs = MockEVSUserBean.getVocabNameList();
-		if (vVocabs == null) vVocabs = new Vector();
+		if (vVocabs == null) {
+			vVocabs = new Vector();
+		}
 		// handle teh special case to make sure vocab for api query is valid
 		if (filterAttr == testCoreTypeQueries.VOCAB_NULL) // (sFilterAttr ==
-														  // null ||
-														  // sFilterAttr.equals(""))
+															// null ||
+															// sFilterAttr.equals(""))
 		{
 			// it is valid vocab name
-			if (vVocabs.contains(sFilterValue)) return sFilterValue; // found it
+			if (vVocabs.contains(sFilterValue))
+				return sFilterValue; // found it
 			// first check if filter value is from diplay vocab list
 			Vector vDisplay = MockEVSUserBean.getVocabDisplayList();
 			if (vDisplay != null && vDisplay.contains(sFilterValue)) {
@@ -611,7 +618,7 @@ public class testCoreTypeQueries {
 			}
 			// filter it as dborigin
 			filterAttr = testCoreTypeQueries.VOCAB_DBORIGIN; // sFilterAttr =
-															 // "vocabDBOrigin";
+																// "vocabDBOrigin";
 		}
 
 		// for (int i=0; i<vVocabs.size(); i++)
@@ -655,7 +662,9 @@ public class testCoreTypeQueries {
 		// if ((sRetValue == null || sRetValue.equals("")) && vVocabs != null)
 		// sRetValue = (String)vVocabs.elementAt(0);
 		// System.out.println(sRetValue + sFilterValue + filterAttr + retAttr);
-		if (sRetValue == null) sRetValue = "";
+		if (sRetValue == null) {
+			sRetValue = "";
+		}
 		return sRetValue;
 	}
 
@@ -685,74 +694,73 @@ public class testCoreTypeQueries {
 			CodedNodeSet nodeSet = evsService.getNodeSet(MetaName, null, null);
 			if (sSearchIn.equals("ConCode")) {
 
-				ConceptReferenceList crefs = ConvenienceMethods
-				        .createConceptReferenceList(new String[] { termStr },
-				                MetaName);
+				ConceptReferenceList crefs = ConvenienceMethods.createConceptReferenceList(new String[] { termStr },
+						MetaName);
 				nodeSet = nodeSet.restrictToCodes(crefs);
 
-			} else if (sSearchIn.equals("subConcept"))
-			// query.getChildConcepts(dtsVocab, termStr);
-			try {
+			} else if (sSearchIn.equals("subConcept")) {
+				// query.getChildConcepts(dtsVocab, termStr);
+				try {
 
-				HashMap<String, ResolvedConceptReference> hSubs = returnSubConcepts(
-				        termStr, MetaName);
+					HashMap<String, ResolvedConceptReference> hSubs = returnSubConcepts(termStr, MetaName);
 
-				lstResult = new ResolvedConceptReferenceList();
-				Iterator<String> iter = hSubs.keySet().iterator();
-				while (iter.hasNext()) {
-					String code = iter.next();
-					ResolvedConceptReference ac = hSubs.get(code);
-					if (code != null && !code.equals(termStr)) {
-						lstResult.addResolvedConceptReference(ac);
+					lstResult = new ResolvedConceptReferenceList();
+					Iterator<String> iter = hSubs.keySet().iterator();
+					while (iter.hasNext()) {
+						String code = iter.next();
+						ResolvedConceptReference ac = hSubs.get(code);
+						if (code != null && !code.equals(termStr)) {
+							lstResult.addResolvedConceptReference(ac);
+						}
 					}
+				} catch (IndexOutOfBoundsException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (LBException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (IndexOutOfBoundsException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (LBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			else {
-				if (vocabType.equals("") || vocabType.equals("NameType")) // do
-																		  // concept
-																		  // name
-																		  // search
-				nodeSet = nodeSet.restrictToMatchingDesignations(termStr, // the
-																		  // text
-																		  // to
-																		  // match
-				        CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, // whether
-																			 // to
-																			 // search
-																			 // all
-																			 // designation,
-																			 // only
-																			 // Preferred
-																			 // or
-																			 // only
-																			 // Non-Preferred
-				        algorithm, // the match algorithm to use
-				        null); // the language to match (null matches all)
-				else if (vocabType.equals("PropType")) { // do concept prop
-														 // search
+			} else {
+				if (vocabType.equals("") || vocabType.equals("NameType")) {
+					// concept
+					// name
+					// search
+					nodeSet = nodeSet.restrictToMatchingDesignations(termStr, // the
+																				// text
+																				// to
+																				// match
+							CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, // whether
+																					// to
+																					// search
+																					// all
+																					// designation,
+																					// only
+																					// Preferred
+																					// or
+																					// only
+																					// Non-Preferred
+							algorithm, // the match algorithm to use
+							null); // the language to match (null matches all)
+				} else if (vocabType.equals("PropType")) { // do concept prop
+															// search
 					// GF32446 this cause Semantic_Type to not to be included
 					LocalNameList lnl = new LocalNameList();
 					lnl.addEntry(sPropIn);
 					PropertyType[] propTypeArray = new PropertyType[1];
 					propTypeArray[0] = CodedNodeSet.PropertyType.PRESENTATION;
 					nodeSet = nodeSet.restrictToMatchingProperties(null, // the
-																		 // Property
-																		 // Name
-																		 // to
-																		 // match
-					        propTypeArray, // the Property Type to match (null
-										   // matches all)
-					        termStr, // the text to match
-					        algorithm, // the match algorithm to use
-					        null);// the language to match (null matches all)
+																			// Property
+																			// Name
+																			// to
+																			// match
+							propTypeArray, // the Property Type to match (null
+											// matches all)
+							termStr, // the text to match
+							algorithm, // the match algorithm to use
+							null);// the language to match (null matches all)
 					System.out.println("doConceptQuery nodeSet retrieved");
-					// logger.debug("EVSSearch:doConceptQuery() nodeSet retrieved from lexEVS.");
+					// logger.debug("EVSSearch:doConceptQuery() nodeSet
+					// retrieved from lexEVS.");
 					// //GF29786 - geting the concept list from lexevs based on
 					// synonyms done (old way???)
 				}
@@ -780,8 +788,7 @@ public class testCoreTypeQueries {
 			// LnL.addEntry("RADLEX");
 
 			CodedNodeSet nodeSet2 = evsService.getNodeSet(dtsVocab, null, null);
-			nodeSet2 = nodeSet2.restrictToProperties(null, types, null, null,
-			        qualifierList);
+			nodeSet2 = nodeSet2.restrictToProperties(null, types, null, null, qualifierList);
 			lstResult = nodeSet2.resolveToList(null, null, null, 20);
 
 			// Now create a qualifier list containing the code you wish to
@@ -797,8 +804,7 @@ public class testCoreTypeQueries {
 			// LnL.addEntry("NCI");
 
 			CodedNodeSet nodeSet3 = evsService.getNodeSet(dtsVocab, null, null);
-			nodeSet3 = nodeSet3.restrictToProperties(null, types, null, null,
-			        qualifierList);
+			nodeSet3 = nodeSet3.restrictToProperties(null, types, null, null, qualifierList);
 			lstResult = nodeSet3.resolveToList(null, null, null, 20);
 
 			// If no map, return Meta CUI
@@ -821,7 +827,7 @@ public class testCoreTypeQueries {
 		String sVocab = "";
 		String termStr = "C12434";
 		Vector<EVS_Bean> resultBeans = doMetaSearch(vList, termStr, searchIn, sMetaSource, iMetaLimit, sVocab);
-		if(resultBeans.size()>0 ){
+		if (resultBeans.size() > 0) {
 			System.out.println("Search by Meta source code successful");
 		} else {
 			System.out.println("Serach by Meta source code returned no results");
@@ -830,7 +836,7 @@ public class testCoreTypeQueries {
 		termStr = "gene";
 		searchIn = "termSearch";
 		resultBeans = doMetaSearch(vList, termStr, searchIn, sMetaSource, iMetaLimit, sVocab);
-		if(resultBeans.size()>0 ){
+		if (resultBeans.size() > 0) {
 			System.out.println("Search by Meta term successful");
 		} else {
 			System.out.println("Serach by Meta term returned no results");
@@ -839,7 +845,7 @@ public class testCoreTypeQueries {
 		searchIn = "ConCode";
 		termStr = "C0017337";
 		resultBeans = doMetaSearch(vList, termStr, searchIn, sMetaSource, iMetaLimit, sVocab);
-		if(resultBeans.size()>0 ){
+		if (resultBeans.size() > 0) {
 			System.out.println("Search by Meta CUI successful");
 		} else {
 			System.out.println("Serach by Meta CUI returned no results");
@@ -856,23 +862,24 @@ public class testCoreTypeQueries {
 	 * @param sVocab
 	 * @return
 	 */
-	private Vector<EVS_Bean> doMetaSearch(Vector<EVS_Bean> vList,
-	        String termStr, String sSearchIn, String sMetaSource,
-	        int iMetaLimit, String sVocab) {
+	private Vector<EVS_Bean> doMetaSearch(Vector<EVS_Bean> vList, String termStr, String sSearchIn, String sMetaSource,
+			int iMetaLimit, String sVocab) {
 
 		ResolvedConceptReferenceList concepts = null;
 
-		if (vList == null) vList = new Vector<EVS_Bean>();
+		if (vList == null) {
+			vList = new Vector<EVS_Bean>();
+		}
 		try {
-			if (termStr == null || termStr.equals("")) return vList;
+			if (termStr == null || termStr.equals(""))
+				return vList;
 			List metaResults = null;
-			CodedNodeSet nodeSet = evsService.getNodeSet("NCI MetaThesaurus",
-			        null, null);
+			CodedNodeSet nodeSet = evsService.getNodeSet("NCI MetaThesaurus", null, null);
 			try {
 				if (sSearchIn.equalsIgnoreCase("MetaCode")) { // do meta code
-															  // specific to
-															  // vocabulary
-															  // source
+																// specific to
+																// vocabulary
+																// source
 					// In the NCI MetaThesaurus, fidning the 'source' of an
 					// 'Atom' is equivalent to finding the
 					// 'source' of a given Property of an Entity. Each CUI
@@ -889,95 +896,92 @@ public class testCoreTypeQueries {
 
 					CodedNodeSet.PropertyType[] types = new CodedNodeSet.PropertyType[1];
 					types[0] = CodedNodeSet.PropertyType.PRESENTATION;
-					
+
 					NameAndValueList qualifierList = new NameAndValueList();
-					NameAndValue nv = new NameAndValue();                  
+					NameAndValue nv = new NameAndValue();
 					nv.setName("source-code");
-					nv.setContent(termStr);                
+					nv.setContent(termStr);
 					qualifierList.addNameAndValue(nv);
-					 
-					//Specify the source code should come from the NCI source
+
+					// Specify the source code should come from the NCI source
 					LocalNameList LnL = new LocalNameList();
 					LnL.addEntry(sMetaSource);
-					 
-					 
-					nodeSet = nodeSet.restrictToProperties(null,types,LnL,null, qualifierList);
-					
-					
-					
 
-//					nodeSet = nodeSet.restrictToProperties(
-//					        Constructors.createLocalNameList("propertyType"),
-//					        types,
-//					        Constructors.createLocalNameList(sMetaSource),
-//					        null, null);
+					nodeSet = nodeSet.restrictToProperties(null, types, LnL, null, qualifierList);
 
-//					nodeSet = nodeSet.restrictToMatchingProperties(
-//					        Constructors.createLocalNameList("value"), // the
-//																	   // Property
-//																	   // Name
-//																	   // to
-//																	   // match
-//					        null, // the Property Type to match (null matches
-//								  // all)
-//					        termStr, // the text to match
-//					        "contains", // the match algorithm to use
-//					        null);// the language to match (null matches all)
+					// nodeSet = nodeSet.restrictToProperties(
+					// Constructors.createLocalNameList("propertyType"),
+					// types,
+					// Constructors.createLocalNameList(sMetaSource),
+					// null, null);
 
-				} else if (sSearchIn.equalsIgnoreCase("ConCode")) // meta cui
-																  // search
-				nodeSet = nodeSet.restrictToMatchingProperties(
-				        Constructors.createLocalNameList("code"), // the
-																  // Property
-																  // Name to
-																  // match
-				        null, // the Property Type to match (null matches all)
-				        termStr, // the text to match
-				        "exactMatch", // the match algorithm to use
-				        null // the language to match (null matches all)
-				        );
-				else
+					// nodeSet = nodeSet.restrictToMatchingProperties(
+					// Constructors.createLocalNameList("value"), // the
+					// // Property
+					// // Name
+					// // to
+					// // match
+					// null, // the Property Type to match (null matches
+					// // all)
+					// termStr, // the text to match
+					// "contains", // the match algorithm to use
+					// null);// the language to match (null matches all)
+
+				} else if (sSearchIn.equalsIgnoreCase("ConCode")) {
+					// search
+					nodeSet = nodeSet.restrictToMatchingProperties(Constructors.createLocalNameList("code"), // the
+																												// Property
+																												// Name
+																												// to
+																												// match
+							null, // the Property Type to match (null matches
+									// all)
+							termStr, // the text to match
+							"exactMatch", // the match algorithm to use
+							null // the language to match (null matches all)
+					);
+				} else {
 					// meta keyword search
-					nodeSet = nodeSet
-					        .restrictToMatchingDesignations(
-					                termStr, // the text to match
-					                CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, // whether
-																						 // to
-																						 // search
-																						 // all
-																						 // designation,
-																						 // only
-																						 // Preferred
-																						 // or
-																						 // only
-																						 // Non-Preferred
-					                "contains", // the match algorithm to use
-					                null); // the language to match (null
-										   // matches all)
+					nodeSet = nodeSet.restrictToMatchingDesignations(termStr, // the
+																				// text
+																				// to
+																				// match
+							CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, // whether
+																					// to
+																					// search
+																					// all
+																					// designation,
+																					// only
+																					// Preferred
+																					// or
+																					// only
+																					// Non-Preferred
+							"contains", // the match algorithm to use
+							null); // the language to match (null
+									// matches all)
+				}
 
 				SortOptionList sortCriteria = Constructors
-				        .createSortOptionList(new String[] { "matchToQuery",
-				                "code" });
+						.createSortOptionList(new String[] { "matchToQuery", "code" });
 
 				// Analyze the result ...
 
 				concepts = nodeSet.resolveToList(sortCriteria, // Sorts used to
-															   // sort results
-															   // (null means
-															   // sort by match
-															   // score)
-				        null, // PropertyNames to resolve (null resolves all)
-				        null, // PropertyTypess to resolve (null resolves all)
-				        100 // cap the number of results returned (-1 resolves
+																// sort results
+																// (null means
+																// sort by match
+																// score)
+						null, // PropertyNames to resolve (null resolves all)
+						null, // PropertyTypess to resolve (null resolves all)
+						100 // cap the number of results returned (-1 resolves
 							// all)
-				        );
+				);
 
 			} catch (Exception ex) {
 				System.out.println("doMetaSearch evsSearch: " + ex.toString());
 				ex.printStackTrace();
 			}
-			if (concepts != null
-			        && concepts.getResolvedConceptReferenceCount() > 0) {
+			if (concepts != null && concepts.getResolvedConceptReferenceCount() > 0) {
 				String sConName = "";
 				String sConID = "";
 				String sCodeType = "";
@@ -988,17 +992,16 @@ public class testCoreTypeQueries {
 				for (int i = 0; i < concepts.getResolvedConceptReferenceCount(); i++) {
 					// Do this so only one result is returned on Meta code
 					// search (API is dupicating a result)
-					if (sSearchIn.equals("MetaCode") && i > 0) break;
+					if (sSearchIn.equals("MetaCode") && i > 0) {
+						break;
+					}
 					// get concept properties
-					ResolvedConceptReference rcr = concepts
-					        .getResolvedConceptReference(i);
+					ResolvedConceptReference rcr = concepts.getResolvedConceptReference(i);
 
 					if (rcr != null) {
 						Property[] props = rcr.getEntity().getProperty();
-						Presentation[] presentations = rcr.getEntity()
-						        .getPresentation();
-						Definition[] definitions = rcr.getEntity()
-						        .getDefinition();
+						Presentation[] presentations = rcr.getEntity().getPresentation();
+						Definition[] definitions = rcr.getEntity().getDefinition();
 
 						sConName = rcr.getEntityDescription().getContent();
 						sConID = rcr.getCode();
@@ -1017,33 +1020,30 @@ public class testCoreTypeQueries {
 						if (definitions != null && definitions.length > 0) {
 							for (Definition defType : definitions) {
 								sDefinition = defType.getValue().getContent();
-								sDefSource = defType.getSource()[0]
-								        .getContent();
+								sDefSource = defType.getSource()[0].getContent();
 
 								EVS_Bean conBean = new EVS_Bean();
-								conBean.setEVSBean(sDefinition, sDefSource,
-								        sConName, sConName, sCodeType, sConID,
-								        sVocab, sVocab, iLevel, "", "", "", "",
-								        sSemantic, "", "");
+								conBean.setEVSBean(sDefinition, sDefSource, sConName, sConName, sCodeType, sConID,
+										sVocab, sVocab, iLevel, "", "", "", "", sSemantic, "", "");
 								conBean.setPREF_VOCAB_CODE(sCodeSrc); // store
-																	  // pref
-																	  // code in
-																	  // the
-																	  // bean
+																		// pref
+																		// code
+																		// in
+																		// the
+																		// bean
 								vList.addElement(conBean); // add concept bean
-														   // to vector
+															// to vector
 							}
 						} else {
 							EVS_Bean conBean = new EVS_Bean();
-							conBean.setEVSBean(sDefinition, sDefSource,
-							        sConName, sConName, sCodeType, sConID,
-							        sVocab, sVocab, iLevel, "", "", "", "",
-							        sSemantic, "", "");
+							conBean.setEVSBean(sDefinition, sDefSource, sConName, sConName, sCodeType, sConID, sVocab,
+									sVocab, iLevel, "", "", "", "", sSemantic, "", "");
 							conBean.setPREF_VOCAB_CODE(sCodeSrc); // store pref
-																  // code in the
-																  // bean
+																	// code in
+																	// the
+																	// bean
 							vList.addElement(conBean); // add concept bean to
-													   // vector
+														// vector
 						}
 					}
 				}
@@ -1061,27 +1061,31 @@ public class testCoreTypeQueries {
 	 * @return
 	 * @throws Exception
 	 */
-	private String getNCIMetaCodeType(String conID, String ftrType)
-	        throws Exception {
+	private String getNCIMetaCodeType(String conID, String ftrType) throws Exception {
 		String sCodeType = "";
 		// get the hash table of meta code property types
 		Hashtable hType = m_eUser.getMetaCodeType();
-		if (hType == null) hType = new Hashtable();
+		if (hType == null) {
+			hType = new Hashtable();
+		}
 		// define code type according to the con id
 		Enumeration enum1 = hType.keys();
 		while (enum1.hasMoreElements()) {
 			String sKey = (String) enum1.nextElement();
 			EVS_METACODE_Bean metaBean = (EVS_METACODE_Bean) hType.get(sKey);
-			if (metaBean == null) metaBean = new EVS_METACODE_Bean();
+			if (metaBean == null) {
+				metaBean = new EVS_METACODE_Bean();
+			}
 			String sMCode = metaBean.getMETACODE_TYPE();
 			String sCFilter = metaBean.getMETACODE_FILTER().toUpperCase(); // (String)hType.get(sMCode);
-			if (sCFilter == null) sCFilter = "";
+			if (sCFilter == null) {
+				sCFilter = "";
+			}
 			if (ftrType.equals("byID")) {
 				// get the default value regardless
-				if (sCFilter.equals("DEFAULT")) sCodeType = sMCode;
-				// use the fitlered one if exists and leave
-				else if (!sCFilter.equals("")
-				        && conID.toUpperCase().indexOf(sCFilter) >= 0) {
+				if (sCFilter.equals("DEFAULT")) {
+					sCodeType = sMCode;
+				} else if (!sCFilter.equals("") && conID.toUpperCase().indexOf(sCFilter) >= 0) {
 					sCodeType = sMCode;
 					break;
 				}
@@ -1098,7 +1102,7 @@ public class testCoreTypeQueries {
 
 	/**
 	 * to get the semantic value for meta thesarurs concept from the collection
-	 * 
+	 *
 	 * @param mtcCon
 	 *            MetaThesaurusConcept object
 	 * @return sSemantic
@@ -1109,7 +1113,9 @@ public class testCoreTypeQueries {
 		for (Property prop : properties) {
 			String name = prop.getPropertyName();
 			if (name != null && name.equals("Semantic_Type")) {
-				if (!sSemantic.equals("")) sSemantic += "; ";
+				if (!sSemantic.equals("")) {
+					sSemantic += "; ";
+				}
 				sSemantic += prop.getValue().getContent();
 			}
 		}
@@ -1118,7 +1124,7 @@ public class testCoreTypeQueries {
 
 	/**
 	 * to get the NCI thesaurus code from the atom collection
-	 * 
+	 *
 	 * @param mtcCon
 	 *            MetaThesaurusConcept object
 	 * @return sCode
@@ -1133,9 +1139,12 @@ public class testCoreTypeQueries {
 				for (Source src : sources) {
 					String sConSrc = src.getContent();
 					if (src != null && !sConSrc.equals("")) {
-						if (sConSrc.contains(prefSrc)) System.out
-						        .println("GOT THE PREFSRC");
-						if (sCode == null) sCode = "";
+						if (sConSrc.contains(prefSrc)) {
+							System.out.println("GOT THE PREFSRC");
+						}
+						if (sCode == null) {
+							sCode = "";
+						}
 					}
 				}
 			}
@@ -1153,23 +1162,17 @@ public class testCoreTypeQueries {
 			CodingSchemeVersionOrTag cvt = new CodingSchemeVersionOrTag();
 			cvt.setVersion(vocabVersion);
 			CodedNodeSet nodes = evsService.getNodeSet(vocabName, cvt, null);
-			nodes = nodes.restrictToMatchingDesignations(searchTerm,
-			        SearchDesignationOption.ALL,
-			        LBConstants.MatchAlgorithms.exactMatch.name(), null);
+			nodes = nodes.restrictToMatchingDesignations(searchTerm, SearchDesignationOption.ALL,
+					LBConstants.MatchAlgorithms.exactMatch.name(), null);
 			nodes = nodes.restrictToStatus(ActiveOption.ALL, null);
-			ResolvedConceptReferenceList crl = nodes.resolveToList(null, null,
-			        null, 20);
+			ResolvedConceptReferenceList crl = nodes.resolveToList(null, null, null, 20);
 			Vector<String> definitions = new Vector<String>();
 			for (int i = 0; i < crl.getResolvedConceptReferenceCount(); i++) {
 				Entity concept = crl.getResolvedConceptReference(i).getEntity();
 				Definition[] defs = concept.getDefinition();
-				for (int j = 0; j < defs.length; j++) {
-					Definition tempDef = defs[j];
+				for (Definition tempDef : defs) {
 					String defText = tempDef.getValue().getContent();
-					definitions
-					        .add(concept.getEntityCode() + " "
-					                + tempDef.getSource(0).getContent() + " "
-					                + defText);
+					definitions.add(concept.getEntityCode() + " " + tempDef.getSource(0).getContent() + " " + defText);
 				}
 			}
 
@@ -1178,8 +1181,7 @@ public class testCoreTypeQueries {
 			}
 			System.out.println(crl.getResolvedConceptReferenceCount());
 		} catch (Exception ex) {
-			System.out.println("searchConcepts_name " + vocabName + " and "
-			        + vocabVersion + " throws Exception = ");
+			System.out.println("searchConcepts_name " + vocabName + " and " + vocabVersion + " throws Exception = ");
 			ex.printStackTrace();
 		}
 		// return 0;
@@ -1217,200 +1219,185 @@ public class testCoreTypeQueries {
 			// // "vocabName");
 			// if( dtsVocab.equals( "MetaValue" ) ) // "MetaValue"))
 			// return lstResult;
-			 evsService = this.registerSecurityToken( 
-			 evsService );
+			evsService = testCoreTypeQueries.registerSecurityToken(evsService);
 			// if
-			// (dtsVocab.equalsIgnoreCase("Ontology for Biomedical Investigations"))
+			// (dtsVocab.equalsIgnoreCase("Ontology for Biomedical
+			// Investigations"))
 			// dtsVocab = "obi";
-			CodedNodeSet nodeSet = evsService.getNodeSet(dtsVocab, null, null); 
+			CodedNodeSet nodeSet = evsService.getNodeSet(dtsVocab, null, null);
 			if (sSearchIn.equals("ConCode")) {
 
-				ConceptReferenceList crefs = ConvenienceMethods
-				        .createConceptReferenceList(new String[] { termStr },
-				                "NCI Thesaurus");
+				ConceptReferenceList crefs = ConvenienceMethods.createConceptReferenceList(new String[] { termStr },
+						"NCI Thesaurus");
 				nodeSet = nodeSet.restrictToCodes(crefs);
 
-			} else if (sSearchIn.equals("subConcept"))
-			// query.getChildConcepts(dtsVocab, termStr);
-			try {
+			} else if (sSearchIn.equals("subConcept")) {
+				// query.getChildConcepts(dtsVocab, termStr);
+				try {
 
-				HashMap<String, ResolvedConceptReference> hSubs = returnSubConcepts(
-				        termStr, dtsVocab);
+					HashMap<String, ResolvedConceptReference> hSubs = returnSubConcepts(termStr, dtsVocab);
 
-				lstResult = new ResolvedConceptReferenceList();
-				Iterator<String> iter = hSubs.keySet().iterator();
-				while (iter.hasNext()) {
-					String code = iter.next();
-					ResolvedConceptReference ac = hSubs.get(code);
-					if (code != null && !code.equals(termStr)) {
-						lstResult.addResolvedConceptReference(ac);
+					lstResult = new ResolvedConceptReferenceList();
+					Iterator<String> iter = hSubs.keySet().iterator();
+					while (iter.hasNext()) {
+						String code = iter.next();
+						ResolvedConceptReference ac = hSubs.get(code);
+						if (code != null && !code.equals(termStr)) {
+							lstResult.addResolvedConceptReference(ac);
+						}
 					}
+				} catch (IndexOutOfBoundsException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (LBException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (IndexOutOfBoundsException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (LBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			else {
-				if (vocabType.equals("") || vocabType.equals("NameType")) 
-				nodeSet = nodeSet.restrictToMatchingDesignations(termStr, 
-				        CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, 
-				        algorithm, 
-				        null); 
-				else if (vocabType.equals("PropType")) { // do concept prop
-														 // search
-					                                     // GF32446 this cause
-														 // Semantic_Type to not
-														 // to be included
+			} else {
+				if (vocabType.equals("") || vocabType.equals("NameType")) {
+					nodeSet = nodeSet.restrictToMatchingDesignations(termStr,
+							CodedNodeSet.SearchDesignationOption.PREFERRED_ONLY, algorithm, null);
+				} else if (vocabType.equals("PropType")) { // do concept prop
+															// search
+															// GF32446 this
+															// cause
+															// Semantic_Type to
+															// not
+															// to be included
 					LocalNameList lnl = new LocalNameList();
 					lnl.addEntry(sPropIn);
 					nodeSet = nodeSet.restrictToMatchingProperties( // JT b4
 																	// GF32723
-					        lnl, // the Property Name to match
-					        null, // the Property Type to match (null matches
-								  // all)
-					        termStr, // the text to match
-					        algorithm, // the match algorithm to use
-					        null);// the language to match (null matches all)
-	
-					logger.debug("EVSSearch:doConceptQuery() nodeSet retrieved from lexEVS."); 
+							lnl, // the Property Name to match
+							null, // the Property Type to match (null matches
+									// all)
+							termStr, // the text to match
+							algorithm, // the match algorithm to use
+							null);// the language to match (null matches all)
+
+					logger.debug("EVSSearch:doConceptQuery() nodeSet retrieved from lexEVS.");
 				}
 			}
 			// call the evs to get resutls
 			if (!sSearchIn.equals("subConcept")) {
 
-				lstResult = nodeSet.resolveToList(null, 
-				        null, 
-				        null, 
-				        100 
-				        );
+				lstResult = nodeSet.resolveToList(null, null, null, 100);
 
 				nodeSet = evsService.getNodeSet(dtsVocab, null, null);
-				nodeSet = nodeSet.restrictToMatchingDesignations(termStr,
-				        SearchDesignationOption.ALL,
-				        LBConstants.MatchAlgorithms.contains.name(), null);
-				ResolvedConceptReferenceList crl = nodeSet.resolveToList(null,
-				        null, null, 20);
+				nodeSet = nodeSet.restrictToMatchingDesignations(termStr, SearchDesignationOption.ALL,
+						LBConstants.MatchAlgorithms.contains.name(), null);
+				ResolvedConceptReferenceList crl = nodeSet.resolveToList(null, null, null, 20);
 				crl.getResolvedConceptReferenceCount();
 
 			}
 
 			// begin GF32723 just for troubleshooting, it does not fix/change
 			// anything
-			if (lstResult != null
-			        && lstResult.getResolvedConceptReferenceCount() > 0) {
-				logger.info("EVSSearch:doConceptQuery ["
-				        + termStr
-				        + "] EVS query results list size "
-				        + lstResult.getResolvedConceptReferenceCount()
-				        + " resolved 1st concept = ["
-				        + lstResult.getResolvedConceptReference(0)
-				                .getConceptCode() + "]");
+			if (lstResult != null && lstResult.getResolvedConceptReferenceCount() > 0) {
+				logger.info("EVSSearch:doConceptQuery [" + termStr + "] EVS query results list size "
+						+ lstResult.getResolvedConceptReferenceCount() + " resolved 1st concept = ["
+						+ lstResult.getResolvedConceptReference(0).getConceptCode() + "]");
 			} else {
-				logger.info("EVSSearch:doConceptQuery [" + termStr
-				        + "] EVS query results list is NULL!");
+				logger.info("EVSSearch:doConceptQuery [" + termStr + "] EVS query results list is NULL!");
 			}
 			// end GF32723 just for troubleshooting, it does not fix/change
 			// anything
 		} catch (Exception ex) {
-			logger.error(evsService.toString()
-			        + " :conceptNameSearch lstResults: " + ex.toString(), ex);
+			logger.error(evsService.toString() + " :conceptNameSearch lstResults: " + ex.toString(), ex);
 		}
 		return lstResult;
 	}
-	
-    public long getMetathesaurusMapping() {
-    	String term = "MO_683";
-    	String source = "MGED";
-    	
-//    	String term = "C12438";
-//    	String source = null;
-    	
-//        if (evsService == null) {
-//              throw new Exception("LexBIGService can not be NULL or empty.");
-//        }
-        boolean evsLookupDone = false;  //just started :)
-//        LexEVSHelper.lbSvc = lbSvc;
 
-        long count = 0;
+	public long getMetathesaurusMapping() {
+		String term = "MO_683";
+		String source = "MGED";
 
-        CodedNodeSet nodeSet;
-        try {
-              nodeSet = evsService.getNodeSet("NCI MetaThesaurus", null, null);
+		// String term = "C12438";
+		// String source = null;
 
-              // Tell the api that you want to get back only the PRESENTATION type
-              // properties
-              CodedNodeSet.PropertyType[] types = new CodedNodeSet.PropertyType[1];
-              types[0] = CodedNodeSet.PropertyType.PRESENTATION;
+		// if (evsService == null) {
+		// throw new Exception("LexBIGService can not be NULL or empty.");
+		// }
+		boolean evsLookupDone = false; // just started :)
+		// LexEVSHelper.lbSvc = lbSvc;
 
-              // Now create a qualifier list containing the code you wish to
-              // search
-              NameAndValueList qualifierList = new NameAndValueList();
-              NameAndValue nv = new NameAndValue();
-              nv.setName("source-code");
-              nv.setContent(term);
-              qualifierList.addNameAndValue(nv);
+		long count = 0;
 
+		CodedNodeSet nodeSet;
+		try {
+			nodeSet = evsService.getNodeSet("NCI MetaThesaurus", null, null);
 
-              System.out.println("getMetathesaurusMapping: original source = [" + source + "] to be submitted to EVS for term [" + term + "]");
-              if(source != null) {
-//                if(source.equals("LOINC") || source.equals("LNC215")) {
-//                      source = "LNC";
-//                }
-//                else
-//                if(source.equals("Radlex")) {
-//                      source = "RADLEX";
-//                }
-//                else
-//                if(source.equals("SNOMED")) {
-//                      source = "SNOMEDCT";
-//                }
-//                else
-//                if(source.equals("OBI")) {
-//                      source = "";      //GF32723 it is not a source but standalone vocabulary
-//                }
-//                System.out.println("getMetathesaurusMapping: IMPORTANT !!! modified source = [" + source + "] for term [" + term + "] to be submitted to EVS ...");
-                  System.out.println("1 getMetathesaurusMapping: source modification for EVS disabled");
-                  nodeSet = nodeSet.restrictToProperties(null, types, Constructors.createLocalNameList(source), null,
-                        qualifierList);
-            } else {
-              nodeSet = nodeSet.restrictToProperties(null, types, null, null,
-              qualifierList);
-            }
-              ResolvedConceptReferenceList rcrl = nodeSet.resolveToList(null,
-                          null, null, 10);
-              Vector<String> metaCUIs = new Vector<String>();
-              for (int i = 0; i < rcrl.getResolvedConceptReferenceCount(); i++) {
-                    ResolvedConceptReference rcr = rcrl
-                                .getResolvedConceptReference(i);
-                    String metaCUI = rcr.getCode();
-                    metaCUIs.add(metaCUI);
-              }
+			// Tell the api that you want to get back only the PRESENTATION type
+			// properties
+			CodedNodeSet.PropertyType[] types = new CodedNodeSet.PropertyType[1];
+			types[0] = CodedNodeSet.PropertyType.PRESENTATION;
 
-              LocalNameList lnl = new LocalNameList();
-              lnl.addEntry("UMLS_CUI");
-              lnl.addEntry("NCI_META_CUI");
-              for (String metaCUI : metaCUIs) {
-                    count++;
-//                    boolean found = matchAttributeValue(lnl, metaCUI);
-                    System.out.println("found count " + count);
-              }
+			// Now create a qualifier list containing the code you wish to
+			// search
+			NameAndValueList qualifierList = new NameAndValueList();
+			NameAndValue nv = new NameAndValue();
+			nv.setName("source-code");
+			nv.setContent(term);
+			qualifierList.addNameAndValue(nv);
 
-              evsLookupDone = true;
-        } catch (LBException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-        }
-        return count;
-  }
-    
-    private void testSentinelTool(){
-    	String[] report = new AuditConceptToEVS().getReportRows(evsService);
-    	for(int i=0; i<report.length;i++){
-    	System.out.println(report[i]);
-    	}
-    }
+			System.out.println("getMetathesaurusMapping: original source = [" + source
+					+ "] to be submitted to EVS for term [" + term + "]");
+			if (source != null) {
+				// if(source.equals("LOINC") || source.equals("LNC215")) {
+				// source = "LNC";
+				// }
+				// else
+				// if(source.equals("Radlex")) {
+				// source = "RADLEX";
+				// }
+				// else
+				// if(source.equals("SNOMED")) {
+				// source = "SNOMEDCT";
+				// }
+				// else
+				// if(source.equals("OBI")) {
+				// source = ""; //GF32723 it is not a source but standalone
+				// vocabulary
+				// }
+				// System.out.println("getMetathesaurusMapping: IMPORTANT !!!
+				// modified source = [" + source + "] for term [" + term + "] to
+				// be submitted to EVS ...");
+				System.out.println("1 getMetathesaurusMapping: source modification for EVS disabled");
+				nodeSet = nodeSet.restrictToProperties(null, types, Constructors.createLocalNameList(source), null,
+						qualifierList);
+			} else {
+				nodeSet = nodeSet.restrictToProperties(null, types, null, null, qualifierList);
+			}
+			ResolvedConceptReferenceList rcrl = nodeSet.resolveToList(null, null, null, 10);
+			Vector<String> metaCUIs = new Vector<String>();
+			for (int i = 0; i < rcrl.getResolvedConceptReferenceCount(); i++) {
+				ResolvedConceptReference rcr = rcrl.getResolvedConceptReference(i);
+				String metaCUI = rcr.getCode();
+				metaCUIs.add(metaCUI);
+			}
+
+			LocalNameList lnl = new LocalNameList();
+			lnl.addEntry("UMLS_CUI");
+			lnl.addEntry("NCI_META_CUI");
+			for (String metaCUI : metaCUIs) {
+				count++;
+				// boolean found = matchAttributeValue(lnl, metaCUI);
+				System.out.println("found count " + count);
+			}
+
+			evsLookupDone = true;
+		} catch (LBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	private void testSentinelTool() {
+		String[] report = new AuditConceptToEVS().getReportRows(evsService);
+		for (String element : report) {
+			System.out.println(element);
+		}
+	}
 
 }

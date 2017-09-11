@@ -1490,7 +1490,7 @@ public class testDataIntegrity {
 			}
 		} catch (Exception e) {
 			System.out.println("FAILURE: MetaBrowser source tab");
-
+e.printStackTrace();
 		}
 	}
 
@@ -1976,13 +1976,17 @@ public class testDataIntegrity {
 			String codingSchemeName = scheme.getCodingSchemeName();
 			String codingSchemeVersion = scheme.getRepresentsVersion();
 			Long conceptCount = scheme.getApproxNumConcepts();
-
+			
+			try{
 			if (codingSchemeVersion != null && codingSchemeVersion.length() > 0) {
 				System.out.println("Success " + codingSchemeName + " " + codingSchemeVersion + " concepts:"
 						+ conceptCount.toString());
 			} else {
 				System.out.println("FAILURE " + codingSchemeName + codingSchemeVersion);
 
+			}} catch(Exception e){
+				System.out.println("FAILURE on " + key);
+				e.printStackTrace();
 			}
 		}
 
@@ -2011,13 +2015,6 @@ public class testDataIntegrity {
 			CodedNodeSet cns = lbSvc.getNodeSet(vocabName, null, null);
 			cns = cns.restrictToCodes(Constructors.createConceptReferenceList(conceptCode));
 		
-			/*cns = cns.restrictToMatchingDesignations(
-					conceptCode, 
-					SearchDesignationOption.ALL, 
-					MatchAlgorithms.exactMatch.name(),
-					null
-				);*/
-			//cns=cns.restrictToMatchingDesignations(searchTerm, SearchDesignationOption.PREFERRED_ONLY, "LuceneQuery",  null);
 			cns = restrictToSource(cns, "NCI");			
 			
 			ResolvedConceptReferencesIterator results = resolveNodeSet(cns, includeRetiredConcepts);
@@ -2029,10 +2026,9 @@ public class testDataIntegrity {
 			}
 			
 		} catch (Exception e) {
-			
-			throw new EVSException("Error finding concept for code ["+conceptCode+"]", e);
+			System.out.println("Error in findConceptsByCode");
+			e.printStackTrace();
 		}
-		
 	}
 	
 	  public void findByPreferredName() 
