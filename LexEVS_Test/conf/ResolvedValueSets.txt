@@ -901,6 +901,7 @@ SPL Risk Evaluation and Mitigation Strategies Ter
 SPL Shape Terminology
 SPL Type of Drug Interaction Terminology
 SPL Unit of Presentation Terminology
+<<<<<<< HEAD
 CDISC Clinical Classification BUERS Test Code Ter
 CDISC Clinical Classification BUERS Test Name Ter
 CDISC Clinical Classification HAM-D6 Clinician Ve
@@ -1041,3 +1042,5 @@ Type of Remedial Action ICSR Terminology
 Type of Report ICSR Terminology
 Type of Reporter ICSR Terminology
 UCUM Terminology
+=======
+>>>>>>> refs/remotes/origin/master
